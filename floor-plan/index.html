@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Floor Plan Designer | Vastu Residential 2D/3D</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Floor Plan Designer | Mobile Optimized Vastu 2D/3D</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
@@ -1064,7 +1064,7 @@
 
     </script>
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
         :root {
             --base: #1e1e2e;
             --surface: #25253a;
@@ -1085,21 +1085,21 @@
             --neo-in: inset 3px 3px 7px var(--shadow-dark), inset -3px -3px 7px var(--shadow-light);
             --neo-in-sm: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light);
         }
-        body { font-family: 'Inter', sans-serif; background: var(--base); color: var(--text); height: 100vh; overflow: hidden; user-select: none; }
-        #app { display: flex; flex-direction: column; height: 100vh; }
+        body { font-family: 'Inter', sans-serif; background: var(--base); color: var(--text); height: 100vh; overflow: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
+        #app { display: flex; flex-direction: column; height: 100vh; position: relative; }
 
         /* ===== HEADER ===== */
-        header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background: var(--surface); box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 20; }
-        .brand { display: flex; align-items: center; gap: 10px; }
-        .brand-icon { width: 38px; height: 38px; background: var(--surface); box-shadow: var(--neo-out-sm); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .brand h1 { font-size: 16px; font-weight: 700; color: var(--accent2); letter-spacing: -0.5px; }
-        .brand span { font-size: 11px; color: var(--text3); display: block; }
-        .header-center { display: flex; align-items: center; gap: 8px; }
-        .floor-btn { padding: 8px 18px; border: none; background: var(--surface); color: var(--text2); font-family: inherit; font-size: 12px; font-weight: 600; border-radius: 10px; cursor: pointer; box-shadow: var(--neo-out-sm); transition: all .2s; }
+        header { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: var(--surface); box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 20; gap: 8px; }
+        .brand { display: flex; align-items: center; gap: 8px; }
+        .brand-icon { width: 34px; height: 34px; background: var(--surface); box-shadow: var(--neo-out-sm); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .brand h1 { font-size: 14px; font-weight: 700; color: var(--accent2); letter-spacing: -0.5px; }
+        .brand span { font-size: 10px; color: var(--text3); display: block; }
+        .header-center { display: flex; align-items: center; gap: 6px; overflow-x: auto; max-width: 100%; padding-bottom: 2px; }
+        .floor-btn { padding: 6px 12px; border: none; background: var(--surface); color: var(--text2); font-family: inherit; font-size: 11px; font-weight: 600; border-radius: 8px; cursor: pointer; box-shadow: var(--neo-out-sm); transition: all .2s; whitespace: nowrap; }
         .floor-btn:hover { color: var(--text); box-shadow: var(--neo-out); }
         .floor-btn.active { box-shadow: var(--neo-in); color: var(--accent); background: var(--surface2); }
-        .header-actions { display: flex; gap: 8px; }
-        .act-btn { width: 36px; height: 36px; border: none; background: var(--surface); border-radius: 10px; box-shadow: var(--neo-out-sm); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all .15s; color: var(--text2); }
+        .header-actions { display: flex; gap: 6px; align-items: center; }
+        .act-btn { width: 32px; height: 32px; border: none; background: var(--surface); border-radius: 8px; box-shadow: var(--neo-out-sm); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all .15s; color: var(--text2); }
         .act-btn:hover { box-shadow: var(--neo-out); color: var(--text); }
         .act-btn:active { box-shadow: var(--neo-in-sm); }
         .act-btn.disabled { opacity: .3; pointer-events: none; }
@@ -1107,53 +1107,89 @@
         /* ===== MAIN LAYOUT ===== */
         .main { display: flex; flex: 1; overflow: hidden; position: relative; }
 
-        /* ===== LEFT PANEL ===== */
-        .left-panel { width: 230px; padding: 12px; background: var(--base); display: flex; flex-direction: column; gap: 12px; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.03); z-index: 10; }
-        .panel-card { background: var(--surface); border-radius: 16px; box-shadow: var(--neo-out); padding: 14px; transition: box-shadow .3s; }
-        .panel-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); font-weight: 700; margin-bottom: 10px; }
+        /* ===== LEFT & RIGHT PANELS (Desktop Default) ===== */
+        .left-panel { width: 230px; padding: 10px; background: var(--base); display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.03); z-index: 10; transition: transform .3s ease; }
+        .right-panel { width: 250px; padding: 10px; background: var(--base); display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.03); z-index: 10; transition: transform .3s ease; }
+        .panel-card { background: var(--surface); border-radius: 14px; box-shadow: var(--neo-out); padding: 10px; }
+        .panel-title { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); font-weight: 700; margin-bottom: 8px; }
         .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        .tool-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; border: none; background: var(--surface); color: var(--text2); font-family: inherit; font-size: 10px; font-weight: 500; border-radius: 10px; cursor: pointer; box-shadow: var(--neo-out-sm); transition: all .15s; }
+        .tool-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border: none; background: var(--surface); color: var(--text2); font-family: inherit; font-size: 9px; font-weight: 500; border-radius: 8px; cursor: pointer; box-shadow: var(--neo-out-sm); transition: all .15s; }
         .tool-btn:hover { color: var(--text); box-shadow: var(--neo-out); }
         .tool-btn.active { box-shadow: var(--neo-in); color: var(--accent); background: var(--surface2); }
-        .tool-btn .tool-icon { font-size: 18px; }
-        .palette-list { display: flex; flex-direction: column; gap: 5px; }
-        .palette-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: none; background: var(--surface); color: var(--text2); font-family: inherit; font-size: 12px; font-weight: 500; border-radius: 10px; cursor: pointer; box-shadow: var(--neo-out-sm); transition: all .15s; text-align: left; width: 100%; }
+        .tool-btn .tool-icon { font-size: 16px; }
+        .palette-list { display: flex; flex-direction: column; gap: 4px; }
+        .palette-item { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border: none; background: var(--surface); color: var(--text2); font-family: inherit; font-size: 11px; font-weight: 500; border-radius: 8px; cursor: pointer; box-shadow: var(--neo-out-sm); transition: all .15s; text-align: left; width: 100%; }
         .palette-item:hover { color: var(--text); box-shadow: var(--neo-out); }
         .palette-item:active, .palette-item.active { box-shadow: var(--neo-in); color: var(--accent); }
-        .palette-color { width: 10px; height: 10px; border-radius: 4px; flex-shrink: 0; }
-        .palette-icon { font-size: 14px; width: 20px; text-align: center; }
+        .palette-color { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+        .palette-icon { font-size: 13px; width: 18px; text-align: center; }
 
         /* ===== CANVAS CONTAINER ===== */
-        .canvas-wrap { flex: 1; display: flex; align-items: center; justify-content: center; background: var(--base); position: relative; overflow: hidden; height: 100%; }
-        .canvas-inner { background: var(--surface); border-radius: 20px; box-shadow: var(--neo-out), 0 0 60px rgba(0,0,0,0.3); padding: 16px; position: relative; }
-        #canvas { display: block; border-radius: 8px; }
-        #container3D { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
+        .canvas-wrap { flex: 1; display: flex; align-items: center; justify-content: center; background: var(--base); position: relative; overflow: hidden; height: 100%; padding: 10px; }
+        .canvas-inner { background: var(--surface); border-radius: 16px; box-shadow: var(--neo-out), 0 0 60px rgba(0,0,0,0.3); padding: 8px; position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+        #canvas { width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; display: block; border-radius: 8px; touch-action: none; }
+        #container3D { position: absolute; inset: 0; width: 100%; height: 100%; display: none; touch-action: none; }
         #webgl3D { width: 100%; height: 100%; }
-        #webgl3D canvas { width: 100%!important; height: 100%!important; display: block; outline: none; }
+        #webgl3D canvas { width: 100%!important; height: 100%!important; display: block; outline: none; touch-action: none; }
 
-        /* ===== RIGHT PANEL ===== */
-        .right-panel { width: 260px; padding: 12px; background: var(--base); display: flex; flex-direction: column; gap: 12px; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.03); z-index: 10; }
-        .prop-field { margin-bottom: 10px; }
-        .prop-field label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 4px; font-weight: 500; }
-        .prop-input { width: 100%; padding: 8px 10px; border: none; background: var(--surface); color: var(--text); font-family: inherit; font-size: 12px; border-radius: 8px; box-shadow: var(--neo-in); outline: none; }
-        .prop-row-inline { display: flex; gap: 8px; }
-        .prop-input-sm { font-size: 11px; text-align: center; }
-        .color-grid { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
-        .color-swatch { width: 22px; height: 22px; border-radius: 6px; border: 2px solid transparent; cursor: pointer; transition: transform .15s; }
+        /* ===== RIGHT PANEL PROPERTIES ===== */
+        .prop-field { margin-bottom: 8px; }
+        .prop-field label { display: block; font-size: 10px; color: var(--text2); margin-bottom: 3px; font-weight: 500; }
+        .prop-input { width: 100%; padding: 6px 8px; border: none; background: var(--surface); color: var(--text); font-family: inherit; font-size: 11px; border-radius: 6px; box-shadow: var(--neo-in); outline: none; }
+        .prop-row-inline { display: flex; gap: 6px; }
+        .prop-input-sm { font-size: 10px; text-align: center; }
+        .color-grid { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 3px; }
+        .color-swatch { width: 20px; height: 20px; border-radius: 5px; border: 2px solid transparent; cursor: pointer; transition: transform .15s; }
         .color-swatch:hover { transform: scale(1.15); }
         .color-swatch.active { border-color: white; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
 
         /* ===== LAYERS ===== */
-        .layer-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; }
-        .layer-name { font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 8px; }
+        .layer-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; }
+        .layer-name { font-size: 11px; color: var(--text2); display: flex; align-items: center; gap: 6px; }
         .layer-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-        .layer-toggle { width: 34px; height: 18px; background: var(--surface); border-radius: 10px; box-shadow: var(--neo-in-sm); position: relative; cursor: pointer; transition: background .2s; }
+        .layer-toggle { width: 32px; height: 16px; background: var(--surface); border-radius: 10px; box-shadow: var(--neo-in-sm); position: relative; cursor: pointer; transition: background .2s; }
         .layer-toggle.on { background: var(--accent); }
-        .layer-toggle .knob { width: 14px; height: 14px; background: var(--text); border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .layer-toggle .knob { width: 12px; height: 12px; background: var(--text); border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
         .layer-toggle.on .knob { transform: translateX(16px); }
 
         /* ===== STATUS BAR ===== */
-        .status-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 20px; background: var(--surface); font-size: 11px; color: var(--text3); border-top: 1px solid rgba(255,255,255,0.03); z-index: 20; }
+        .status-bar { display: flex; align-items: center; justify-content: space-between; padding: 4px 14px; background: var(--surface); font-size: 10px; color: var(--text3); border-top: 1px solid rgba(255,255,255,0.03); z-index: 20; }
+
+        /* ===== MOBILE BOTTOM NAVBAR & SLIDE DRAWERS ===== */
+        .mobile-nav { display: none; background: var(--surface); padding: 6px 12px; border-top: 1px solid rgba(255,255,255,0.05); justify-content: space-around; align-items: center; z-index: 40; box-shadow: 0 -4px 15px rgba(0,0,0,0.4); }
+        .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; border: none; background: transparent; color: var(--text2); font-size: 10px; font-weight: 600; cursor: pointer; font-family: inherit; }
+        .mobile-nav-btn.active { color: var(--accent); }
+        .mobile-nav-btn span { font-size: 16px; }
+
+        /* ===== RESPONSIVE BREAKPOINT FOR PHONES & TABLETS ===== */
+        @media (max-width: 768px) {
+            header { padding: 6px 10px; }
+            .brand h1 { font-size: 12px; }
+            .brand span { display: none; }
+            .status-bar { display: none; }
+            .mobile-nav { display: flex; }
+
+            .left-panel {
+                position: absolute; bottom: 50px; left: 0; right: 0; width: 100%!important; max-height: 55vh;
+                background: var(--surface); border-radius: 20px 20px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+                transform: translateY(120%); z-index: 35; border-right: none;
+            }
+            .left-panel.open { transform: translateY(0); }
+
+            .right-panel {
+                position: absolute; bottom: 50px; left: 0; right: 0; width: 100%!important; max-height: 55vh;
+                background: var(--surface); border-radius: 20px 20px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+                transform: translateY(120%); z-index: 35; border-left: none;
+            }
+            .right-panel.open { transform: translateY(0); }
+
+            .canvas-wrap { padding: 4px; }
+            .canvas-inner { padding: 4px; border-radius: 12px; }
+
+            #controls3DPanel { bottom: 60px!important; padding: 4px 8px!important; gap: 6px!important; }
+            #controls3DPanel select { font-size: 9px!important; padding: 3px 6px!important; }
+            #controls3DPanel button { font-size: 9px!important; padding: 4px 8px!important; }
+        }
     </style>
 </head>
 <body>
@@ -1163,20 +1199,24 @@
             <div class="brand-icon">📐</div>
             <div>
                 <h1>Floor Plan Designer</h1>
-                <span>27' × 23' · Precise Shaft 1 (8'×2') & Shaft 2 (4'×2') · G+3</span>
+                <span>27' × 23' · Mobile & Touch · G+3</span>
             </div>
         </div>
         <div class="header-center" id="floorTabs"></div>
         <div class="header-actions">
-            <button class="act-btn" id="btnUndo" onclick="undo()" title="Undo (Ctrl+Z)">↩️</button>
-            <button class="act-btn" id="btnRedo" onclick="redo()" title="Redo (Ctrl+Y)">↪️</button>
-            <button class="act-btn" onclick="resetFloor()" title="Reset Floor">🔄</button>
+            <button class="act-btn" id="btnUndo" onclick="undo()" title="Undo">↩️</button>
+            <button class="act-btn" id="btnRedo" onclick="redo()" title="Redo">↪️</button>
             <button class="act-btn" onclick="exportPNG()" title="Export PNG">📷</button>
-            <button class="floor-btn" id="btn3DMode" onclick="toggle3DMode()" style="background:var(--accent);color:white;margin-left:8px">🎲 3D Animated View</button>
+            <button class="floor-btn" id="btn3DMode" onclick="toggle3DMode()" style="background:var(--accent);color:white;margin-left:2px">🎲 3D</button>
         </div>
     </header>
+
     <div class="main">
-        <aside class="left-panel">
+        <aside class="left-panel" id="leftPanel">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span class="panel-title" style="margin:0">Add & Edit Tools</span>
+                <button onclick="toggleMobileDrawer('left')" style="border:none;background:none;color:var(--text2);font-size:16px;cursor:pointer">✕</button>
+            </div>
             <div class="panel-card">
                 <div class="panel-title">Tools</div>
                 <div class="tool-grid" id="toolGrid"></div>
@@ -1187,61 +1227,73 @@
             </div>
             <div class="panel-card">
                 <div class="panel-title">Custom Feet Room</div>
-                <div class="prop-field" style="margin-bottom:6px">
+                <div class="prop-field" style="margin-bottom:4px">
                     <label>Room Name</label>
-                    <input class="prop-input" id="cName" value="Custom Room" style="font-size:11px;padding:6px 8px">
+                    <input class="prop-input" id="cName" value="Custom Room" style="font-size:10px;padding:4px 6px">
                 </div>
-                <div class="prop-row-inline" style="margin-bottom:6px">
+                <div class="prop-row-inline" style="margin-bottom:4px">
                     <div class="prop-field"><label>Width (ft)</label><input class="prop-input prop-input-sm" type="number" id="cW" value="10" min="2" max="23"></div>
                     <div class="prop-field"><label>Height (ft)</label><input class="prop-input prop-input-sm" type="number" id="cH" value="10" min="2" max="26"></div>
                 </div>
-                <button class="palette-item" onclick="addCustomRoom()" style="justify-content:center;background:var(--accent);color:white;margin-top:6px;font-weight:600">
-                    ➕ Add Room by Feet
+                <button class="palette-item" onclick="addCustomRoom()" style="justify-content:center;background:var(--accent);color:white;margin-top:4px;font-weight:600">
+                    ➕ Add Room
                 </button>
             </div>
         </aside>
+
         <div class="canvas-wrap">
             <div class="canvas-inner" id="canvas2DWrap">
-                <svg id="canvas" xmlns="http://www.w3.org/2000/svg"></svg>
+                <svg id="canvas" viewBox="0 0 620 540" xmlns="http://www.w3.org/2000/svg"></svg>
             </div>
             <div id="container3D">
                 <div id="webgl3D"></div>
-                <div id="controls3DPanel" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface);padding:8px 16px;border-radius:12px;box-shadow:var(--neo-out);display:flex;align-items:center;gap:12px;z-index:30">
-                    <select id="select3DFloor" onchange="set3DFloorView(this.value)" class="prop-input" style="width:auto;font-size:11px;padding:6px 10px;background:var(--surface2);color:white;cursor:pointer">
-                        <option value="all">🏢 All Floors (G+3 Stack)</option>
-                        <option value="ground">🚗 Ground Floor Only</option>
-                        <option value="first">🛋️ 1st Floor Only</option>
-                        <option value="second">🛏️ 2nd Floor Only</option>
-                        <option value="third">☀️ 3rd Floor Only</option>
+                <div id="controls3DPanel" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:var(--surface);padding:6px 12px;border-radius:10px;box-shadow:var(--neo-out);display:flex;align-items:center;gap:8px;z-index:30;flex-wrap:wrap;justify-content:center">
+                    <select id="select3DFloor" onchange="set3DFloorView(this.value)" class="prop-input" style="width:auto;font-size:10px;padding:4px 8px;background:var(--surface2);color:white;cursor:pointer">
+                        <option value="all">🏢 All Floors</option>
+                        <option value="ground">🚗 Ground</option>
+                        <option value="first">🛋️ 1st Floor</option>
+                        <option value="second">🛏️ 2nd Floor</option>
+                        <option value="third">☀️ 3rd Floor</option>
                     </select>
-                    <button class="floor-btn" onclick="toggle3DExplode()" id="btnExplode">💥 Explode Floors</button>
-                    <button class="floor-btn" onclick="toggle3DAutoRotate()" id="btnRotate">🔄 Auto Rotate</button>
-                    <label style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px">
-                        Wall Height:
-                        <input type="range" id="wallHeightRange" min="2" max="15" value="9" oninput="update3DWallHeight(this.value)">
-                    </label>
+                    <button class="floor-btn" onclick="toggle3DExplode()" id="btnExplode">💥 Explode</button>
+                    <button class="floor-btn" onclick="toggle3DAutoRotate()" id="btnRotate">🔄 Rotate</button>
                 </div>
             </div>
         </div>
-        <aside class="right-panel">
+
+        <aside class="right-panel" id="rightPanel">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span class="panel-title" style="margin:0">Room Properties & Layers</span>
+                <button onclick="toggleMobileDrawer('right')" style="border:none;background:none;color:var(--text2);font-size:16px;cursor:pointer">✕</button>
+            </div>
             <div class="panel-card">
                 <div class="panel-title">Properties</div>
-                <div id="propsContent"><div style="font-size:11px;color:var(--text3);text-align:center;padding:10px 0">Select a room to edit</div></div>
+                <div id="propsContent"><div style="font-size:10px;color:var(--text3);text-align:center;padding:8px 0">Select a room to edit</div></div>
             </div>
             <div class="panel-card">
                 <div class="panel-title">Layers</div>
                 <div id="layersList"></div>
             </div>
-            <div class="panel-card">
-                <div class="panel-title">Vastu Audit</div>
-                <div id="vastuContent"></div>
-            </div>
         </aside>
     </div>
+
+    <!-- Mobile Navigation Bar -->
+    <nav class="mobile-nav">
+        <button class="mobile-nav-btn active" id="mBtnCanvas" onclick="toggleMobileDrawer('none')">
+            <span>📐</span>Canvas
+        </button>
+        <button class="mobile-nav-btn" id="mBtnAdd" onclick="toggleMobileDrawer('left')">
+            <span>➕</span>Add Rooms
+        </button>
+        <button class="mobile-nav-btn" id="mBtnProps" onclick="toggleMobileDrawer('right')">
+            <span>⚙️</span>Properties
+        </button>
+    </nav>
+
     <div class="status-bar">
-        <span>📐 Grid: 1' snap</span>
+        <span>📐 1' Snap</span>
         <span id="statusPos">📍 —</span>
-        <span id="statusInfo">🏠 27' (W-E) × 23' (S-N) = 621 sqft</span>
+        <span id="statusInfo">🏠 27'×23' (621 sqft)</span>
     </div>
 </div>
 
@@ -1254,6 +1306,31 @@ const SVG_W = BW * S + PAD * 2, SVG_H = BH * S + PAD * 2;
 
 function snap(v) { return Math.round(v); }
 function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+function toggleMobileDrawer(side) {
+    const lp = document.getElementById('leftPanel');
+    const rp = document.getElementById('rightPanel');
+    const bCanvas = document.getElementById('mBtnCanvas');
+    const bAdd = document.getElementById('mBtnAdd');
+    const bProps = document.getElementById('mBtnProps');
+
+    if (side === 'left') {
+        lp.classList.toggle('open');
+        rp.classList.remove('open');
+    } else if (side === 'right') {
+        rp.classList.toggle('open');
+        lp.classList.remove('open');
+    } else {
+        lp.classList.remove('open');
+        rp.classList.remove('open');
+    }
+
+    if (bCanvas && bAdd && bProps) {
+        bCanvas.classList.toggle('active', !lp.classList.contains('open') && !rp.classList.contains('open'));
+        bAdd.classList.toggle('active', lp.classList.contains('open'));
+        bProps.classList.toggle('active', rp.classList.contains('open'));
+    }
+}
 
 // ======================== PRESETS & CONSTANTS ========================
 const PRESETS = {
@@ -1288,18 +1365,12 @@ const LAYER_DEFS = [
     { id:'vastu',      label:'Vastu Zones',    dot:'#c084fc', on:false },
 ];
 
-// Single Source of Truth for Structural Fixed Features based on Hand Sketch Dimensions:
-// 1. Staircase (6'x7'): South Wall (10' from West, 6' from East Road) -> y:10..17, x:0..6
-// 2. Shaft 1 (8'x2'): West Wall (10' from SW corner, 9' from NW corner) -> x:0..2, y:10..18
-// 3. Septic Tank (8'x5'): Attached directly behind Shaft 1 on West Wall -> x:2..7, y:10..18
-// 4. Shaft 2 (4'x2'): North Wall (10' from NW corner, 9' from NE Road) -> x:10..14, y:21..23
-// 5. Boring: NE Corner Ishan zone -> x:22..26, y:18..22
 const FIXED_FEATURES = [
-    { id:'stairs', name:'Staircase', x:0, y:10, w:6, h:7, color:'#475569', label:'Staircase (6\'×7\')', icon:'🪜', desc:'South Wall (10\' from West, 6\' from East)' },
-    { id:'shaft1', name:'West Plumbing Shaft', x:0, y:10, w:2, h:8, color:'#0284c7', label:'Shaft 1 (8\'×2\')', icon:'⚙️', desc:'West Wall Shaft (10\' from SW, 9\' from NW)' },
-    { id:'septic', name:'Septic Tank', x:2, y:10, w:5, h:8, color:'#b91c1c', label:'Septic Tank (8\'×5\')', icon:'🛢️', desc:'West Wall (Attached directly behind Shaft 1)' },
-    { id:'shaft2', name:'North Electrical Shaft', x:10, y:21, w:4, h:2, color:'#fbbf24', label:'Shaft 2 (4\'×2\')', icon:'⚡', desc:'North Wall Shaft (10\' from NW, 9\' from NE Road)' },
-    { id:'boring', name:'Borewell (Boring)', x:22, y:18, w:4, h:4, color:'#0284c7', label:'Boring', icon:'💧', desc:'North-East Corner (Ishan — Vastu Perfect!)' },
+    { id:'stairs', name:'Staircase', x:0, y:10, w:6, h:7, color:'#475569', label:'Staircase (6\'×7\')', icon:'🪜', desc:'South Wall' },
+    { id:'shaft1', name:'West Plumbing Shaft', x:0, y:10, w:2, h:8, color:'#0284c7', label:'Shaft 1 (8\'×2\')', icon:'⚙️', desc:'West Wall Shaft' },
+    { id:'septic', name:'Septic Tank', x:2, y:10, w:5, h:8, color:'#b91c1c', label:'Septic Tank (8\'×5\')', icon:'🛢️', desc:'West Wall' },
+    { id:'shaft2', name:'North Electrical Shaft', x:10, y:21, w:4, h:2, color:'#fbbf24', label:'Shaft 2 (4\'×2\')', icon:'⚡', desc:'North Wall Shaft' },
+    { id:'boring', name:'Borewell (Boring)', x:22, y:18, w:4, h:4, color:'#0284c7', label:'Boring', icon:'💧', desc:'North-East Corner' },
 ];
 
 const VASTU_ZONES = [
@@ -1320,14 +1391,14 @@ function makeFloors() {
     return {
         ground:[
             {id:gid(),name:'Parking Bay',x:7,y:7,w:11,h:11,color:'#334155',icon:'🚗',vastu:'Central Parking'},
-            {id:gid(),name:'Entrance Lobby (Road)',x:7,y:18,w:10,h:5,color:'#4a5568',icon:'🚪',vastu:'East Entrance from Road'},
+            {id:gid(),name:'Entrance Lobby (Road)',x:7,y:18,w:10,h:5,color:'#4a5568',icon:'🚪',vastu:'East Entrance'},
             {id:gid(),name:'Utility / Store',x:0,y:0,w:6,h:7,color:'#374151',icon:'🔧',vastu:'SW Corner'},
         ],
         first:[
-            {id:gid(),name:'Master Bedroom Area',x:0,y:0,w:10,h:10,color:'#4338ca',icon:'🛏️',vastu:'South-West (10\'×10\' SW Wall)'},
-            {id:gid(),name:'Living Room',x:10,y:0,w:8,h:10,color:'#166534',icon:'🛋️',vastu:'North / East — Living Area'},
-            {id:gid(),name:'Kitchen Area',x:6,y:17,w:12,h:6,color:'#b45309',icon:'🍳',vastu:'South-East — Agneya Kitchen (6\'×6\')'},
-            {id:gid(),name:'Bathroom / Toilet',x:0,y:17,w:6,h:6,color:'#0e7490',icon:'🚿',vastu:'West / NW — Toilet Area'},
+            {id:gid(),name:'Master Bedroom',x:0,y:0,w:10,h:10,color:'#4338ca',icon:'🛏️',vastu:'South-West'},
+            {id:gid(),name:'Living Room',x:10,y:0,w:8,h:10,color:'#166534',icon:'🛋️',vastu:'North / East'},
+            {id:gid(),name:'Kitchen Area',x:6,y:17,w:12,h:6,color:'#b45309',icon:'🍳',vastu:'South-East'},
+            {id:gid(),name:'Bathroom / Toilet',x:0,y:17,w:6,h:6,color:'#0e7490',icon:'🚿',vastu:'West / NW'},
             {id:gid(),name:'Dining Hall',x:6,y:12,w:12,h:5,color:'#9f1239',icon:'🍽️',vastu:'East Dining Area'},
         ],
         second:[
@@ -1361,11 +1432,13 @@ function deselectRoom() { selRoom = null; updateProps(); render(); }
 function svgPos(e) {
     const svg = document.getElementById('canvas');
     const rect = svg.getBoundingClientRect();
+    const clientX = e.touches && e.touches[0] ? e.touches[0].clientX : (e.clientX || 0);
+    const clientY = e.touches && e.touches[0] ? e.touches[0].clientY : (e.clientY || 0);
     const scaleX = SVG_W / (rect.width || SVG_W);
     const scaleY = SVG_H / (rect.height || SVG_H);
     return {
-        x: clamp(snap((e.clientX - rect.left) * scaleX - PAD), 0, BW * S),
-        y: clamp(snap((e.clientY - rect.top) * scaleY - PAD), 0, BH * S)
+        x: clamp(snap((clientX - rect.left) * scaleX - PAD), 0, BW * S),
+        y: clamp(snap((clientY - rect.top) * scaleY - PAD), 0, BH * S)
     };
 }
 
@@ -1373,8 +1446,7 @@ function svgPos(e) {
 function render() {
     const svg = document.getElementById('canvas');
     if (!svg) return;
-    svg.setAttribute('width', SVG_W);
-    svg.setAttribute('height', SVG_H);
+    svg.setAttribute('viewBox', `0 0 ${SVG_W} ${SVG_H}`);
 
     let h = '';
 
@@ -1420,17 +1492,17 @@ function render() {
         curRooms().forEach(r => {
             const rx = PAD + r.x*S, ry = PAD + r.y*S, rw = r.w*S, rh = r.h*S;
             const isSel = (r.id === selRoom);
-            h += `<g transform="translate(${rx},${ry})" style="cursor:${curTool==='move'?'grab':'pointer'}" onclick="selectRoomClick(event, '${r.id}')" onmousedown="startDrag(event, '${r.id}')">
+            h += `<g transform="translate(${rx},${ry})" style="cursor:${curTool==='move'?'grab':'pointer'}" onclick="selectRoomClick(event, '${r.id}')" onmousedown="startDrag(event, '${r.id}')" ontouchstart="startDrag(event, '${r.id}')">
                 <rect width="${rw}" height="${rh}" fill="${r.color}" fill-opacity="${isSel?0.5:0.35}" stroke="${isSel?'#7c6ff5':r.color}" stroke-width="${isSel?2.5:1.5}" rx="3"/>
                 <text x="${rw/2}" y="${rh/2 - 6}" text-anchor="middle" fill="#e8e8f0" font-size="11" font-weight="600">${r.icon || '🚪'} ${r.name}</text>
                 <text x="${rw/2}" y="${rh/2 + 8}" text-anchor="middle" fill="#9898b0" font-size="9">${r.w}' × ${r.h}' (${r.w*r.h} sqft)</text>`;
 
             if (isSel) {
-                const hs = 6;
-                h += `<rect x="${-hs/2}" y="${-hs/2}" width="${hs}" height="${hs}" fill="#7c6ff5" stroke="#fff" stroke-width="1" style="cursor:nwse-resize" onmousedown="startResize(event,'${r.id}','nw')"/>
-                      <rect x="${rw-hs/2}" y="${-hs/2}" width="${hs}" height="${hs}" fill="#7c6ff5" stroke="#fff" stroke-width="1" style="cursor:nesw-resize" onmousedown="startResize(event,'${r.id}','ne')"/>
-                      <rect x="${-hs/2}" y="${rh-hs/2}" width="${hs}" height="${hs}" fill="#7c6ff5" stroke="#fff" stroke-width="1" style="cursor:nesw-resize" onmousedown="startResize(event,'${r.id}','sw')"/>
-                      <rect x="${rw-hs/2}" y="${rh-hs/2}" width="${hs}" height="${hs}" fill="#7c6ff5" stroke="#fff" stroke-width="1" style="cursor:nwse-resize" onmousedown="startResize(event,'${r.id}','se')"/>`;
+                const hs = 12;
+                h += `<rect x="${-hs/2}" y="${-hs/2}" width="${hs}" height="${hs}" fill="#7c6ff5" stroke="#fff" stroke-width="1.5" style="cursor:nwse-resize" onmousedown="startResize(event,'${r.id}','nw')" ontouchstart="startResize(event,'${r.id}','nw')"/>
+                      <rect x="${rw-hs/2}" y="${-hs/2}" width="${hs}" height="${hs}" fill="#7c6ff5" stroke="#fff" stroke-width="1.5" style="cursor:nesw-resize" onmousedown="startResize(event,'${r.id}','ne')" ontouchstart="startResize(event,'${r.id}','ne')"/>
+                      <rect x="${-hs/2}" y="${rh-hs/2}" width="${hs}" height="${hs}" fill="#7c6ff5" stroke="#fff" stroke-width="1.5" style="cursor:nesw-resize" onmousedown="startResize(event,'${r.id}','sw')" ontouchstart="startResize(event,'${r.id}','sw')"/>
+                      <rect x="${rw-hs/2}" y="${rh-hs/2}" width="${hs}" height="${hs}" fill="#7c6ff5" stroke="#fff" stroke-width="1.5" style="cursor:nwse-resize" onmousedown="startResize(event,'${r.id}','se')" ontouchstart="startResize(event,'${r.id}','se')"/>`;
             }
             h += `</g>`;
         });
@@ -1448,6 +1520,7 @@ function render() {
 
 // ======================== EVENT HANDLERS ========================
 function selectRoomClick(e, id) {
+    if(e.cancelable) e.preventDefault();
     e.stopPropagation();
     if (curTool === 'delete') { deleteRoom(id); return; }
     selRoom = id;
@@ -1474,13 +1547,14 @@ function startResize(e, id, handle) {
     drag = { type:'resize', room, handle, ox:room.x, oy:room.y, ow:room.w, oh:room.h, sx:pos.x/S, sy:pos.y/S };
 }
 
-document.addEventListener('mousemove', (e) => {
+function handlePointerMove(e) {
     if (is3DMode) return;
     const svg = document.getElementById('canvas');
     if (svg) {
         const pos = svgPos(e);
         const fx = (pos.x/S).toFixed(1), fy = (pos.y/S).toFixed(1);
-        document.getElementById('statusPos').textContent = `📍 ${fx}', ${fy}'`;
+        const statusEl = document.getElementById('statusPos');
+        if(statusEl) statusEl.textContent = `📍 ${fx}', ${fy}'`;
     }
 
     if (!drag) return;
@@ -1502,11 +1576,17 @@ document.addEventListener('mousemove', (e) => {
         render();
         updateProps();
     }
-});
+}
 
-document.addEventListener('mouseup', () => {
+document.addEventListener('mousemove', handlePointerMove);
+document.addEventListener('touchmove', handlePointerMove, { passive: false });
+
+function handlePointerUp() {
     if (drag) { pushHistory(); drag = null; updateProps(); }
-});
+}
+
+document.addEventListener('mouseup', handlePointerUp);
+document.addEventListener('touchend', handlePointerUp);
 
 document.getElementById('canvas').addEventListener('click', (e) => {
     if (e.target.id === 'canvas' || e.target.tagName === 'rect') {
@@ -1546,7 +1626,7 @@ function deleteRoom(id) {
 function updateProps() {
     const room = curRooms().find(r => r.id === selRoom);
     if (!room) {
-        document.getElementById('propsContent').innerHTML = '<div style="font-size:11px;color:var(--text3);text-align:center;padding:10px 0">Select a room to edit</div>';
+        document.getElementById('propsContent').innerHTML = '<div style="font-size:10px;color:var(--text3);text-align:center;padding:8px 0">Select a room to edit</div>';
         return;
     }
     const html = `
@@ -1555,17 +1635,16 @@ function updateProps() {
             <input class="prop-input" value="${room.name}" onchange="setProp('name',this.value)">
         </div>
         <div class="prop-row-inline">
-            <div class="prop-field"><label>X Position (ft)</label><input class="prop-input prop-input-sm" type="number" value="${room.x}" min="0" max="${BW-room.w}" onchange="setProp('x',+this.value)"></div>
-            <div class="prop-field"><label>Y Position (ft)</label><input class="prop-input prop-input-sm" type="number" value="${room.y}" min="0" max="${BH-room.h}" onchange="setProp('y',+this.value)"></div>
+            <div class="prop-field"><label>X Pos (ft)</label><input class="prop-input prop-input-sm" type="number" value="${room.x}" min="0" max="${BW-room.w}" onchange="setProp('x',+this.value)"></div>
+            <div class="prop-field"><label>Y Pos (ft)</label><input class="prop-input prop-input-sm" type="number" value="${room.y}" min="0" max="${BH-room.h}" onchange="setProp('y',+this.value)"></div>
         </div>
         <div class="prop-row-inline">
             <div class="prop-field"><label>Width (ft)</label><input class="prop-input prop-input-sm" type="number" id="pW" value="${room.w}" min="2" max="${BW-room.x}" onchange="setProp('w',+this.value)"></div>
             <div class="prop-field"><label>Height (ft)</label><input class="prop-input prop-input-sm" type="number" id="pH" value="${room.h}" min="2" max="${BH-room.y}" onchange="setProp('h',+this.value)"></div>
         </div>
-        <div class="prop-field" style="margin-bottom:10px">
+        <div class="prop-field" style="margin-bottom:8px">
             <label>Target Area (sq ft)</label>
             <input class="prop-input" type="number" id="pArea" value="${room.w * room.h}" min="4" max="${BW*BH}" onchange="setAreaProp(+this.value)">
-            <span style="font-size:10px;color:var(--text3);display:block;margin-top:2px">Adjusts height automatically to fit area</span>
         </div>
         <div class="prop-field">
             <label>Color</label>
@@ -1730,26 +1809,25 @@ let scene3D, camera3D, renderer3D, controls3D, animReq3D;
 let floor3DGroups = {};
 let view3DFloor = 'all';
 
-// Precise Riser Pipe & Wiring Lines connecting through exact Shaft 1 & Shaft 2 locations
 const PLUMBING_PIPES = { 
     lines: [
-        [[24, 20], [1, 14]],        // Borewell Sump line to Shaft 1 (West Wall x:0..2, y:10..18)
-        [[1, 14], [3, 5]],          // Water supply line from Shaft 1 to Master Bath
-        [[1, 14], [12, 20]],        // Water supply line from Shaft 1 to Kitchen
+        [[24, 20], [1, 14]],
+        [[1, 14], [3, 5]],
+        [[1, 14], [12, 20]],
     ] 
 };
 const DRAINAGE_PIPES = { 
     lines: [
-        [[3, 5], [1, 14]],          // Master Bath waste drain directly into Shaft 1 Drop
-        [[12, 20], [1, 14]],        // Kitchen drain into Shaft 1 Drop
-        [[1, 14], [4.5, 14]],       // Shaft 1 Drop directly into Septic Tank (x:2..7, y:10..18)
+        [[3, 5], [1, 14]],
+        [[12, 20], [1, 14]],
+        [[1, 14], [4.5, 14]],
     ] 
 };
 const ELECTRICAL_WIRING = { 
     lines: [
-        [[27, 21.5], [12, 22]],     // Feed from East Road to Shaft 2 Riser (North Wall x:10..14, y:21..23)
-        [[12, 22], [12, 20]],       // Feeder to Kitchen Agneya Panel
-        [[12, 22], [5, 5]],         // Circuit to Master Bedroom
+        [[27, 21.5], [12, 22]],
+        [[12, 22], [12, 20]],
+        [[12, 22], [5, 5]],
     ] 
 };
 
@@ -1772,7 +1850,7 @@ function toggle3DMode() {
             is3DMode = false;
             return;
         }
-        btn.textContent = '📐 2D Blueprint View';
+        btn.textContent = '📐 2D';
         btn.style.background = 'var(--success)';
         wrap2D.style.display = 'none';
         container3D.style.display = 'block';
@@ -1781,7 +1859,7 @@ function toggle3DMode() {
         build3DScene();
         animate3D();
     } else {
-        btn.textContent = '🎲 3D Animated View';
+        btn.textContent = '🎲 3D';
         btn.style.background = 'var(--accent)';
         wrap2D.style.display = 'flex';
         container3D.style.display = 'none';
@@ -1792,7 +1870,7 @@ function toggle3DMode() {
 function resize3D() {
     if (!renderer3D || !camera3D) return;
     const wrap = document.querySelector('.canvas-wrap');
-    const w = wrap ? wrap.clientWidth : window.innerWidth - 480;
+    const w = wrap ? wrap.clientWidth : window.innerWidth;
     const h = wrap ? wrap.clientHeight : window.innerHeight - 80;
     if (w > 50 && h > 50) {
         camera3D.aspect = w / h;
@@ -1803,7 +1881,7 @@ function resize3D() {
 
 function init3DEngine() {
     const container = document.getElementById('webgl3D');
-    const width = container.clientWidth || window.innerWidth - 480;
+    const width = container.clientWidth || window.innerWidth;
     const height = container.clientHeight || window.innerHeight - 80;
 
     scene3D = new THREE.Scene();
@@ -1879,12 +1957,10 @@ function build3DScene() {
             create3DRoomWalls(fGroup, r.x, r.y, r.w, r.h, wallHeight3D);
         });
 
-        // Exact 3D Shaft Columns (Shaft 1 on West Wall x:0..2, y:10..18; Shaft 2 on North Wall x:10..14, y:21..23)
         create3DShaftColumn(fGroup, 0, 10, 2, 8, wallHeight3D, '#0284c7');
         create3DShaftColumn(fGroup, 10, 21, 4, 2, wallHeight3D, '#fbbf24');
 
         if (fKey === 'ground') {
-            // Septic Tank directly behind Shaft 1 (x:2..7, y:10..18)
             const septicGeo = new THREE.BoxGeometry(5, 4, 8);
             const septicMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, opacity: 0.8, transparent: true });
             const septicMesh = new THREE.Mesh(septicGeo, septicMat);
@@ -2003,12 +2079,12 @@ function animate3D() {
 function toggle3DExplode() {
     isExploded = !isExploded;
     targetExplode = isExploded ? 1 : 0;
-    document.getElementById('btnExplode').textContent = isExploded ? '🏢 Collapse Floors' : '💥 Explode Floors';
+    document.getElementById('btnExplode').textContent = isExploded ? '🏢 Collapse' : '💥 Explode';
 }
 
 function toggle3DAutoRotate() {
     isAutoRotate = !isAutoRotate;
-    document.getElementById('btnRotate').textContent = isAutoRotate ? '⏸️ Pause Rotate' : '🔄 Auto Rotate';
+    document.getElementById('btnRotate').textContent = isAutoRotate ? '⏸️ Pause' : '🔄 Rotate';
 }
 
 function update3DWallHeight(val) {
