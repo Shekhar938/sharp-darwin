@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floor Plan Designer | Vastu Residential 2D/3D</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+/* THREE_JS_INLINE */
+    </script>
+    <script>
+/* ORBIT_CONTROLS_INLINE */
+    </script>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --base: #1e1e2e;
+            --surface: #25253a;
+            --surface2: #2c2c44;
+            --shadow-dark: #16162a;
+            --shadow-light: #34344e;
+            --accent: #7c6ff5;
+            --accent2: #a29bfe;
+            --accent-glow: rgba(124, 111, 245, 0.25);
+            --success: #2ecc71;
+            --warn: #f1c40f;
+            --danger: #e74c3c;
+            --text: #e8e8f0;
+            --text2: #9898b0;
+            --text3: #5a5a70;
+            --neo-out: 6px 6px 14px var(--shadow-dark), -6px -6px 14px var(--shadow-light);
+            --neo-out-sm: 3px 3px 7px var(--shadow-dark), -3px -3px 7px var(--shadow-light);
+            --neo-in: inset 3px 3px 7px var(--shadow-dark), inset -3px -3px 7px var(--shadow-light);
+            --neo-in-sm: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light);
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--base); color: var(--text); height: 100vh; overflow: hidden; user-select: none; }
+        #app { display: flex; flex-direction: column; height: 100vh; }
+
+        /* ===== HEADER ===== */
+        header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background: var(--surface); box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 20; }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand-icon { width: 38px; height: 38px; background: var(--surface); box-shadow: var(--neo-out-sm); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .brand h1 { font-size: 16px; font-weight: 700; color: var(--accent2); letter-spacing: -0.5px; }
+        .brand span { font-size: 11px; color: var(--text3); display: block; }
+        .header-center { display: flex; align-items: center; gap: 8px; }
+        .floor-btn { padding: 8px 18px; border: none; background: var(--surface); color: var(--text2); font-family: inherit; font-size: 12px; font-weight: 600; border-radius: 10px; cursor: pointer; box-shadow: var(--neo-out-sm); transition: all .2s; }
+        .floor-btn:hover { color: var(--text); box-shadow: var(--neo-out); }
+        .floor-btn.active { box-shadow: var(--neo-in); color: var(--accent); background: var(--surface2); }
+        .header-actions { display: flex; gap: 8px; }
+        .act-btn { width: 36px; height: 36px; border: none; background: var(--surface); border-radius: 10px; box-shadow: var(--neo-out-sm); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all .15s; color: var(--text2); }
+        .act-btn:hover { box-shadow: var(--neo-out); color: var(--text); }
+        .act-btn:active { box-shadow: var(--neo-in-sm); }
+        .act-btn.disabled { opacity: .3; pointer-events: none; }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main { display: flex; flex: 1; overflow: hidden; position: relative; }
+
+        /* ===== LEFT PANEL ===== */
+        .left-panel { width: 230px; padding: 12px; background: var(--base); display: flex; flex-direction: column; gap: 12px; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.03); z-index: 10; }
+        .panel-card { background: var(--surface); border-radius: 16px; box-shadow: var(--neo-out); padding: 14px; transition: box-shadow .3s; }
+        .panel-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); font-weight: 700; margin-bottom: 10px; }
+        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .tool-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; border: none; background: var(--surface); color: var(--text2); font-family: inherit; font-size: 10px; font-weight: 500; border-radius: 10px; cursor: pointer; box-shadow: var(--neo-out-sm); transition: all .15s; }
+        .tool-btn:hover { color: var(--text); box-shadow: var(--neo-out); }
+        .tool-btn.active { box-shadow: var(--neo-in); color: var(--accent); background: var(--surface2); }
+        .tool-btn .tool-icon { font-size: 18px; }
+        .palette-list { display: flex; flex-direction: column; gap: 5px; }
+        .palette-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: none; background: var(--surface); color: var(--text2); font-family: inherit; font-size: 12px; font-weight: 500; border-radius: 10px; cursor: pointer; box-shadow: var(--neo-out-sm); transition: all .15s; text-align: left; width: 100%; }
+        .palette-item:hover { color: var(--text); box-shadow: var(--neo-out); }
+        .palette-item:active, .palette-item.active { box-shadow: var(--neo-in); color: var(--accent); }
+        .palette-color { width: 10px; height: 10px; border-radius: 4px; flex-shrink: 0; }
+        .palette-icon { font-size: 14px; width: 20px; text-align: center; }
+
+        /* ===== CANVAS CONTAINER ===== */
+        .canvas-wrap { flex: 1; display: flex; align-items: center; justify-content: center; background: var(--base); position: relative; overflow: hidden; height: 100%; }
+        .canvas-inner { background: var(--surface); border-radius: 20px; box-shadow: var(--neo-out), 0 0 60px rgba(0,0,0,0.3); padding: 16px; position: relative; }
+        #canvas { display: block; border-radius: 8px; }
+        #container3D { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
+        #webgl3D { width: 100%; height: 100%; }
+        #webgl3D canvas { width: 100%!important; height: 100%!important; display: block; outline: none; }
+
+        /* ===== RIGHT PANEL ===== */
+        .right-panel { width: 260px; padding: 12px; background: var(--base); display: flex; flex-direction: column; gap: 12px; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.03); z-index: 10; }
+        .prop-field { margin-bottom: 10px; }
+        .prop-field label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 4px; font-weight: 500; }
+        .prop-input { width: 100%; padding: 8px 10px; border: none; background: var(--surface); color: var(--text); font-family: inherit; font-size: 12px; border-radius: 8px; box-shadow: var(--neo-in); outline: none; }
+        .prop-row-inline { display: flex; gap: 8px; }
+        .prop-input-sm { font-size: 11px; text-align: center; }
+        .color-grid { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+        .color-swatch { width: 22px; height: 22px; border-radius: 6px; border: 2px solid transparent; cursor: pointer; transition: transform .15s; }
+        .color-swatch:hover { transform: scale(1.15); }
+        .color-swatch.active { border-color: white; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
+
+        /* ===== LAYERS ===== */
+        .layer-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; }
+        .layer-name { font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 8px; }
+        .layer-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .layer-toggle { width: 34px; height: 18px; background: var(--surface); border-radius: 10px; box-shadow: var(--neo-in-sm); position: relative; cursor: pointer; transition: background .2s; }
+        .layer-toggle.on { background: var(--accent); }
+        .layer-toggle .knob { width: 14px; height: 14px; background: var(--text); border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .layer-toggle.on .knob { transform: translateX(16px); }
+
+        /* ===== STATUS BAR ===== */
+        .status-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 20px; background: var(--surface); font-size: 11px; color: var(--text3); border-top: 1px solid rgba(255,255,255,0.03); z-index: 20; }
+    </style>
+</head>
+<body>
+<div id="app">
+    <header>
+        <div class="brand">
+            <div class="brand-icon">📐</div>
+            <div>
+                <h1>Floor Plan Designer</h1>
+                <span>27' × 23' · Precise Shaft 1 (8'×2') & Shaft 2 (4'×2') · G+3</span>
+            </div>
+        </div>
+        <div class="header-center" id="floorTabs"></div>
+        <div class="header-actions">
+            <button class="act-btn" id="btnUndo" onclick="undo()" title="Undo (Ctrl+Z)">↩️</button>
+            <button class="act-btn" id="btnRedo" onclick="redo()" title="Redo (Ctrl+Y)">↪️</button>
+            <button class="act-btn" onclick="resetFloor()" title="Reset Floor">🔄</button>
+            <button class="act-btn" onclick="exportPNG()" title="Export PNG">📷</button>
+            <button class="floor-btn" id="btn3DMode" onclick="toggle3DMode()" style="background:var(--accent);color:white;margin-left:8px">🎲 3D Animated View</button>
+        </div>
+    </header>
+    <div class="main">
+        <aside class="left-panel">
+            <div class="panel-card">
+                <div class="panel-title">Tools</div>
+                <div class="tool-grid" id="toolGrid"></div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-title">Add Room</div>
+                <div class="palette-list" id="paletteList"></div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-title">Custom Feet Room</div>
+                <div class="prop-field" style="margin-bottom:6px">
+                    <label>Room Name</label>
+                    <input class="prop-input" id="cName" value="Custom Room" style="font-size:11px;padding:6px 8px">
+                </div>
+                <div class="prop-row-inline" style="margin-bottom:6px">
+                    <div class="prop-field"><label>Width (ft)</label><input class="prop-input prop-input-sm" type="number" id="cW" value="10" min="2" max="23"></div>
+                    <div class="prop-field"><label>Height (ft)</label><input class="prop-input prop-input-sm" type="number" id="cH" value="10" min="2" max="26"></div>
+                </div>
+                <button class="palette-item" onclick="addCustomRoom()" style="justify-content:center;background:var(--accent);color:white;margin-top:6px;font-weight:600">
+                    ➕ Add Room by Feet
+                </button>
+            </div>
+        </aside>
+        <div class="canvas-wrap">
+            <div class="canvas-inner" id="canvas2DWrap">
+                <svg id="canvas" xmlns="http://www.w3.org/2000/svg"></svg>
+            </div>
+            <div id="container3D">
+                <div id="webgl3D"></div>
+                <div id="controls3DPanel" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface);padding:8px 16px;border-radius:12px;box-shadow:var(--neo-out);display:flex;align-items:center;gap:12px;z-index:30">
+                    <select id="select3DFloor" onchange="set3DFloorView(this.value)" class="prop-input" style="width:auto;font-size:11px;padding:6px 10px;background:var(--surface2);color:white;cursor:pointer">
+                        <option value="all">🏢 All Floors (G+3 Stack)</option>
+                        <option value="ground">🚗 Ground Floor Only</option>
+                        <option value="first">🛋️ 1st Floor Only</option>
+                        <option value="second">🛏️ 2nd Floor Only</option>
+                        <option value="third">☀️ 3rd Floor Only</option>
+                    </select>
+                    <button class="floor-btn" onclick="toggle3DExplode()" id="btnExplode">💥 Explode Floors</button>
+                    <button class="floor-btn" onclick="toggle3DAutoRotate()" id="btnRotate">🔄 Auto Rotate</button>
+                    <label style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px">
+                        Wall Height:
+                        <input type="range" id="wallHeightRange" min="2" max="15" value="9" oninput="update3DWallHeight(this.value)">
+                    </label>
+                </div>
+            </div>
+        </div>
+        <aside class="right-panel">
+            <div class="panel-card">
+                <div class="panel-title">Properties</div>
+                <div id="propsContent"><div style="font-size:11px;color:var(--text3);text-align:center;padding:10px 0">Select a room to edit</div></div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-title">Layers</div>
+                <div id="layersList"></div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-title">Vastu Audit</div>
+                <div id="vastuContent"></div>
+            </div>
+        </aside>
+    </div>
+    <div class="status-bar">
+        <span>📐 Grid: 1' snap</span>
+        <span id="statusPos">📍 —</span>
+        <span id="statusInfo">🏠 27' (W-E) × 23' (S-N) = 621 sqft</span>
+    </div>
+</div>
+
+<script>
+// ======================== GLOBAL UTILITIES & CONFIG ========================
+function gid() { return 'r_' + Math.random().toString(36).substr(2, 9); }
+
+const S = 20, BW = 27, BH = 23, PAD = 40;
+const SVG_W = BW * S + PAD * 2, SVG_H = BH * S + PAD * 2;
+
+function snap(v) { return Math.round(v); }
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+// ======================== PRESETS & CONSTANTS ========================
+const PRESETS = {
+    living:   { name:'Living Room',   w:12, h:10, color:'#166534', icon:'🛋️' },
+    bedroom:  { name:'Bedroom',       w:10, h:9,  color:'#4338ca', icon:'🛏️' },
+    kitchen:  { name:'Kitchen',       w:9,  h:7,  color:'#b45309', icon:'🍳' },
+    bathroom: { name:'Bathroom',      w:5,  h:5,  color:'#0e7490', icon:'🚿' },
+    dining:   { name:'Dining Area',   w:5,  h:6,  color:'#9f1239', icon:'🍽️' },
+    balcony:  { name:'Balcony',       w:10, h:4,  color:'#14532d', icon:'🌿' },
+    pooja:    { name:'Pooja Room',    w:4,  h:4,  color:'#a16207', icon:'🪔' },
+    passage:  { name:'Passage',       w:4,  h:6,  color:'#1e293b', icon:'🚶' },
+    utility:  { name:'Utility',       w:4,  h:4,  color:'#78350f', icon:'🔧' },
+};
+
+const ROOM_COLORS = ['#166534','#4338ca','#b45309','#0e7490','#9f1239','#475569','#14532d','#a16207','#1e293b','#78350f','#6d28d9','#0f766e','#9a3412','#1d4ed8','#b91c1c'];
+
+const TOOLS = [
+    { id:'select', icon:'🖱️', label:'Select' },
+    { id:'move',   icon:'✋', label:'Move' },
+    { id:'delete', icon:'🗑️', label:'Delete' },
+    { id:'add',    icon:'➕', label:'Add' },
+];
+
+const LAYER_DEFS = [
+    { id:'grid',       label:'Grid',           dot:'#555', on:true },
+    { id:'rooms',      label:'Rooms',          dot:'#818cf8', on:true },
+    { id:'fixed',      label:'Fixed Features', dot:'#2ecc71', on:true },
+    { id:'dims',       label:'Dimensions',     dot:'#94a3b8', on:true },
+    { id:'plumbing',   label:'Water Supply',   dot:'#60a5fa', on:true },
+    { id:'drainage',   label:'Drainage Pipes', dot:'#0284c7', on:true },
+    { id:'electrical', label:'Electrical Wire',dot:'#fbbf24', on:true },
+    { id:'vastu',      label:'Vastu Zones',    dot:'#c084fc', on:false },
+];
+
+// Single Source of Truth for Structural Fixed Features based on Hand Sketch Dimensions:
+// 1. Staircase (6'x7'): South Wall (10' from West, 6' from East Road) -> y:10..17, x:0..6
+// 2. Shaft 1 (8'x2'): West Wall (10' from SW corner, 9' from NW corner) -> x:0..2, y:10..18
+// 3. Septic Tank (8'x5'): Attached directly behind Shaft 1 on West Wall -> x:2..7, y:10..18
+// 4. Shaft 2 (4'x2'): North Wall (10' from NW corner, 9' from NE Road) -> x:10..14, y:21..23
+// 5. Boring: NE Corner Ishan zone -> x:22..26, y:18..22
+const FIXED_FEATURES = [
+    { id:'stairs', name:'Staircase', x:0, y:10, w:6, h:7, color:'#475569', label:'Staircase (6\'×7\')', icon:'🪜', desc:'South Wall (10\' from West, 6\' from East)' },
+    { id:'shaft1', name:'West Plumbing Shaft', x:0, y:10, w:2, h:8, color:'#0284c7', label:'Shaft 1 (8\'×2\')', icon:'⚙️', desc:'West Wall Shaft (10\' from SW, 9\' from NW)' },
+    { id:'septic', name:'Septic Tank', x:2, y:10, w:5, h:8, color:'#b91c1c', label:'Septic Tank (8\'×5\')', icon:'🛢️', desc:'West Wall (Attached directly behind Shaft 1)' },
+    { id:'shaft2', name:'North Electrical Shaft', x:10, y:21, w:4, h:2, color:'#fbbf24', label:'Shaft 2 (4\'×2\')', icon:'⚡', desc:'North Wall Shaft (10\' from NW, 9\' from NE Road)' },
+    { id:'boring', name:'Borewell (Boring)', x:22, y:18, w:4, h:4, color:'#0284c7', label:'Boring', icon:'💧', desc:'North-East Corner (Ishan — Vastu Perfect!)' },
+];
+
+const VASTU_ZONES = [
+    { name:'SW\nEarth',     x:0,  y:0,  w:9, h:7.67, color:'rgba(161,98,7,0.12)', tc:'#d97706' },
+    { name:'W\nSpace',      x:9,  y:0,  w:9, h:7.67, color:'rgba(226,232,240,0.06)', tc:'#cbd5e1' },
+    { name:'NW\nAir',       x:18, y:0,  w:9, h:7.67, color:'rgba(148,163,184,0.12)', tc:'#94a3b8' },
+    
+    { name:'S\nFame',       x:0,  y:7.67, w:9, h:7.67, color:'rgba(239,68,68,0.08)', tc:'#ef4444' },
+    { name:'Center\nBrahma',x:9,  y:7.67, w:9, h:7.67, color:'rgba(251,191,36,0.08)', tc:'#fbbf24' },
+    { name:'N\nWealth',     x:18, y:7.67, w:9, h:7.67, color:'rgba(52,211,153,0.10)', tc:'#34d399' },
+    
+    { name:'SE\nFire',      x:0,  y:15.33, w:9, h:7.67, color:'rgba(248,113,113,0.12)', tc:'#f87171' },
+    { name:'E\nRoad',       x:9,  y:15.33, w:9, h:7.67, color:'rgba(251,146,60,0.10)', tc:'#fb923c' },
+    { name:'NE\nBoring',    x:18, y:15.33, w:9, h:7.67, color:'rgba(96,165,250,0.14)', tc:'#60a5fa' },
+];
+
+function makeFloors() {
+    return {
+        ground:[
+            {id:gid(),name:'Parking Bay',x:7,y:7,w:11,h:11,color:'#334155',icon:'🚗',vastu:'Central Parking'},
+            {id:gid(),name:'Entrance Lobby (Road)',x:7,y:18,w:10,h:5,color:'#4a5568',icon:'🚪',vastu:'East Entrance from Road'},
+            {id:gid(),name:'Utility / Store',x:0,y:0,w:6,h:7,color:'#374151',icon:'🔧',vastu:'SW Corner'},
+        ],
+        first:[
+            {id:gid(),name:'Master Bedroom Area',x:0,y:0,w:10,h:10,color:'#4338ca',icon:'🛏️',vastu:'South-West (10\'×10\' SW Wall)'},
+            {id:gid(),name:'Living Room',x:10,y:0,w:8,h:10,color:'#166534',icon:'🛋️',vastu:'North / East — Living Area'},
+            {id:gid(),name:'Kitchen Area',x:6,y:17,w:12,h:6,color:'#b45309',icon:'🍳',vastu:'South-East — Agneya Kitchen (6\'×6\')'},
+            {id:gid(),name:'Bathroom / Toilet',x:0,y:17,w:6,h:6,color:'#0e7490',icon:'🚿',vastu:'West / NW — Toilet Area'},
+            {id:gid(),name:'Dining Hall',x:6,y:12,w:12,h:5,color:'#9f1239',icon:'🍽️',vastu:'East Dining Area'},
+        ],
+        second:[
+            {id:gid(),name:'Bedroom 2',x:0,y:0,w:10,h:10,color:'#4338ca',icon:'🛏️',vastu:'South-West Bedroom'},
+            {id:gid(),name:'Bedroom 3',x:16,y:0,w:9,h:10,color:'#6d28d9',icon:'🛏️',vastu:'North-West Bedroom'},
+            {id:gid(),name:'Living Lounge',x:10,y:10,w:14,h:13,color:'#166534',icon:'🛋️',vastu:'Central Family Lounge'},
+            {id:gid(),name:'Bathroom',x:0,y:17,w:6,h:6,color:'#0e7490',icon:'🚿',vastu:'West Toilet'},
+        ],
+        third:[
+            {id:gid(),name:'Bedroom 4 / Guest',x:0,y:0,w:10,h:10,color:'#4338ca',icon:'🛏️',vastu:'South-West Bedroom'},
+            {id:gid(),name:'Open Roof Terrace',x:10,y:0,w:15,h:23,color:'#14532d',icon:'🌿',vastu:'North-East Open Sky Terrace'},
+        ],
+    };
+}
+
+let curFloor = 'first';
+let floors = makeFloors();
+let curTool = 'select';
+let addType = 'living';
+let selRoom = null;
+let drag = null;
+let history = [];
+let histIdx = -1;
+let layers = {};
+LAYER_DEFS.forEach(l => layers[l.id] = l.on);
+
+// ======================== STATE HELPERS ========================
+function curRooms() { return floors[curFloor] || []; }
+function deselectRoom() { selRoom = null; updateProps(); render(); }
+
+function svgPos(e) {
+    const svg = document.getElementById('canvas');
+    const rect = svg.getBoundingClientRect();
+    const scaleX = SVG_W / (rect.width || SVG_W);
+    const scaleY = SVG_H / (rect.height || SVG_H);
+    return {
+        x: clamp(snap((e.clientX - rect.left) * scaleX - PAD), 0, BW * S),
+        y: clamp(snap((e.clientY - rect.top) * scaleY - PAD), 0, BH * S)
+    };
+}
+
+// ======================== 2D SVG RENDERER ========================
+function render() {
+    const svg = document.getElementById('canvas');
+    if (!svg) return;
+    svg.setAttribute('width', SVG_W);
+    svg.setAttribute('height', SVG_H);
+
+    let h = '';
+
+    h += `<defs>
+        <pattern id="gridPattern" width="${S}" height="${S}" patternUnits="userSpaceOnUse">
+            <path d="M ${S} 0 L 0 0 0 ${S}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+        </pattern>
+        <pattern id="majorGrid" width="${S*5}" height="${S*5}" patternUnits="userSpaceOnUse">
+            <rect width="${S*5}" height="${S*5}" fill="url(#gridPattern)"/>
+            <path d="M ${S*5} 0 L 0 0 0 ${S*5}" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+        </pattern>
+    </defs>`;
+
+    h += `<rect x="${PAD}" y="${PAD}" width="${BW*S}" height="${BH*S}" fill="#1b1b2d" stroke="#64748b" stroke-width="3" rx="4"/>`;
+
+    if (layers.grid) {
+        h += `<rect x="${PAD}" y="${PAD}" width="${BW*S}" height="${BH*S}" fill="url(#majorGrid)"/>`;
+    }
+
+    if (layers.vastu) {
+        VASTU_ZONES.forEach(z => {
+            const zx = PAD + z.x*S, zy = PAD + z.y*S, zw = z.w*S, zh = z.h*S;
+            h += `<rect x="${zx}" y="${zy}" width="${zw}" height="${zh}" fill="${z.color}" stroke="${z.tc}" stroke-width="0.8" stroke-dasharray="3,3"/>`;
+            const lines = z.name.split('\n');
+            h += `<text x="${zx + zw/2}" y="${zy + zh/2 - 4}" text-anchor="middle" fill="${z.tc}" font-size="9" font-weight="700" opacity="0.8">${lines[0]}</text>`;
+            if(lines[1]) h += `<text x="${zx + zw/2}" y="${zy + zh/2 + 8}" text-anchor="middle" fill="${z.tc}" font-size="8" opacity="0.6">${lines[1]}</text>`;
+        });
+    }
+
+    if (layers.fixed) {
+        FIXED_FEATURES.forEach(ff => {
+            if (curFloor !== 'ground' && ff.id !== 'stairs' && !ff.id.includes('shaft')) return;
+            const fx = PAD + ff.x*S, fy = PAD + ff.y*S, fw = ff.w*S, fh = ff.h*S;
+            h += `<g transform="translate(${fx},${fy})">
+                <rect width="${fw}" height="${fh}" fill="${ff.color}" fill-opacity="0.4" stroke="${ff.color}" stroke-width="2" stroke-dasharray="4,2" rx="4"/>
+                <text x="${fw/2}" y="${fh/2 - 2}" text-anchor="middle" fill="#e2e8f0" font-size="10" font-weight="700">${ff.icon} ${ff.name}</text>
+                <text x="${fw/2}" y="${fh/2 + 10}" text-anchor="middle" fill="#94a3b8" font-size="8">${ff.w}' × ${ff.h}'</text>
+            </g>`;
+        });
+    }
+
+    if (layers.rooms) {
+        curRooms().forEach(r => {
+            const rx = PAD + r.x*S, ry = PAD + r.y*S, rw = r.w*S, rh = r.h*S;
+            const isSel = (r.id === selRoom);
+            h += `<g transform="translate(${rx},${ry})" style="cursor:${curTool==='move'?'grab':'pointer'}" onclick="selectRoomClick(event, '${r.id}')" onmousedown="startDrag(event, '${r.id}')">
+                <rect width="${rw}" height="${rh}" fill="${r.color}" fill-opacity="${isSel?0.5:0.35}" stroke="${isSel?'#7c6ff5':r.color}" stroke-width="${isSel?2.5:1.5}" rx="3"/>
+                <text x="${rw/2}" y="${rh/2 - 6}" text-anchor="middle" fill="#e8e8f0" font-size="11" font-weight="600">${r.icon || '🚪'} ${r.name}</text>
+                <text x="${rw/2}" y="${rh/2 + 8}" text-anchor="middle" fill="#9898b0" font-size="9">${r.w}' × ${r.h}' (${r.w*r.h} sqft)</text>`;
+
+            if (isSel) {
+                const hs = 6;
+                h += `<rect x="${-hs/2}" y="${-hs/2}" width="${hs}" height="${hs}" fill="#7c6ff5" stroke="#fff" stroke-width="1" style="cursor:nwse-resize" onmousedown="startResize(event,'${r.id}','nw')"/>
+                      <rect x="${rw-hs/2}" y="${-hs/2}" width="${hs}" height="${hs}" fill="#7c6ff5" stroke="#fff" stroke-width="1" style="cursor:nesw-resize" onmousedown="startResize(event,'${r.id}','ne')"/>
+                      <rect x="${-hs/2}" y="${rh-hs/2}" width="${hs}" height="${hs}" fill="#7c6ff5" stroke="#fff" stroke-width="1" style="cursor:nesw-resize" onmousedown="startResize(event,'${r.id}','sw')"/>
+                      <rect x="${rw-hs/2}" y="${rh-hs/2}" width="${hs}" height="${hs}" fill="#7c6ff5" stroke="#fff" stroke-width="1" style="cursor:nwse-resize" onmousedown="startResize(event,'${r.id}','se')"/>`;
+            }
+            h += `</g>`;
+        });
+    }
+
+    if (layers.dims) {
+        h += `<text x="${PAD + BW*S/2}" y="${PAD - 12}" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600">27' WEST WALL</text>
+              <text x="${PAD + BW*S/2}" y="${PAD + BH*S + 20}" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600">27' EAST ROAD</text>
+              <text x="${PAD - 12}" y="${PAD + BH*S/2}" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" transform="rotate(-90 ${PAD-12} ${PAD+BH*S/2})">23' SOUTH</text>
+              <text x="${PAD + BW*S + 18}" y="${PAD + BH*S/2}" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" transform="rotate(90 ${PAD+BW*S+18} ${PAD+BH*S/2})">23' NORTH</text>`;
+    }
+
+    svg.innerHTML = h;
+}
+
+// ======================== EVENT HANDLERS ========================
+function selectRoomClick(e, id) {
+    e.stopPropagation();
+    if (curTool === 'delete') { deleteRoom(id); return; }
+    selRoom = id;
+    updateProps();
+    render();
+}
+
+function startDrag(e, id) {
+    if (curTool !== 'move' && curTool !== 'select') return;
+    e.stopPropagation();
+    selRoom = id;
+    const room = curRooms().find(r => r.id === id);
+    if (!room) return;
+    const pos = svgPos(e);
+    drag = { type:'move', room, ox:room.x, oy:room.y, sx:pos.x/S, sy:pos.y/S };
+}
+
+function startResize(e, id, handle) {
+    e.stopPropagation();
+    selRoom = id;
+    const room = curRooms().find(r => r.id === id);
+    if (!room) return;
+    const pos = svgPos(e);
+    drag = { type:'resize', room, handle, ox:room.x, oy:room.y, ow:room.w, oh:room.h, sx:pos.x/S, sy:pos.y/S };
+}
+
+document.addEventListener('mousemove', (e) => {
+    if (is3DMode) return;
+    const svg = document.getElementById('canvas');
+    if (svg) {
+        const pos = svgPos(e);
+        const fx = (pos.x/S).toFixed(1), fy = (pos.y/S).toFixed(1);
+        document.getElementById('statusPos').textContent = `📍 ${fx}', ${fy}'`;
+    }
+
+    if (!drag) return;
+    const pos = svgPos(e);
+    const dx = pos.x/S - drag.sx, dy = pos.y/S - drag.sy;
+
+    if (drag.type === 'move') {
+        drag.room.x = clamp(snap(drag.ox + dx), 0, BW - drag.room.w);
+        drag.room.y = clamp(snap(drag.oy + dy), 0, BH - drag.room.h);
+        render();
+    } else if (drag.type === 'resize') {
+        const r = drag.room, h = drag.handle;
+        let nx=drag.ox, ny=drag.oy, nw=drag.ow, nh=drag.oh;
+        if(h.includes('e')){nw=snap(drag.ow+dx);nw=clamp(nw,2,BW-r.x)}
+        if(h.includes('w')){nx=snap(drag.ox+dx);nx=clamp(nx,0,drag.ox+drag.ow-2);nw=drag.ox+drag.ow-nx}
+        if(h.includes('s')){nh=snap(drag.oh+dy);nh=clamp(nh,2,BH-r.y)}
+        if(h.includes('n')){ny=snap(drag.oy+dy);ny=clamp(ny,0,drag.oy+drag.oh-2);nh=drag.oy+drag.oh-ny}
+        r.x=nx;r.y=ny;r.w=nw;r.h=nh;
+        render();
+        updateProps();
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    if (drag) { pushHistory(); drag = null; updateProps(); }
+});
+
+document.getElementById('canvas').addEventListener('click', (e) => {
+    if (e.target.id === 'canvas' || e.target.tagName === 'rect') {
+        if (curTool === 'add') {
+            const pos = svgPos(e);
+            const p = PRESETS[addType] || PRESETS.living;
+            const rx = clamp(snap(pos.x/S - p.w/2), 0, BW - p.w);
+            const ry = clamp(snap(pos.y/S - p.h/2), 0, BH - p.h);
+            const newRoom = { id:gid(), name:p.name, x:rx, y:ry, w:p.w, h:p.h, color:p.color, icon:p.icon };
+            curRooms().push(newRoom);
+            selRoom = newRoom.id;
+            pushHistory(); render(); updateProps();
+        } else {
+            deselectRoom();
+        }
+    }
+});
+
+function addCustomRoom() {
+    const name = document.getElementById('cName').value || 'Custom Room';
+    const w = clamp(parseInt(document.getElementById('cW').value)||10, 2, BW);
+    const h = clamp(parseInt(document.getElementById('cH').value)||10, 2, BH);
+    const p = PRESETS[addType] || PRESETS.living;
+    const newRoom = { id:gid(), name, x:0, y:0, w, h, color:p.color, icon:p.icon };
+    curRooms().push(newRoom);
+    selRoom = newRoom.id;
+    pushHistory(); render(); updateProps();
+}
+
+function deleteRoom(id) {
+    floors[curFloor] = curRooms().filter(r => r.id !== id);
+    if (selRoom === id) selRoom = null;
+    pushHistory(); render(); updateProps();
+}
+
+// ======================== PROPERTIES PANEL ========================
+function updateProps() {
+    const room = curRooms().find(r => r.id === selRoom);
+    if (!room) {
+        document.getElementById('propsContent').innerHTML = '<div style="font-size:11px;color:var(--text3);text-align:center;padding:10px 0">Select a room to edit</div>';
+        return;
+    }
+    const html = `
+        <div class="prop-field">
+            <label>Room Name</label>
+            <input class="prop-input" value="${room.name}" onchange="setProp('name',this.value)">
+        </div>
+        <div class="prop-row-inline">
+            <div class="prop-field"><label>X Position (ft)</label><input class="prop-input prop-input-sm" type="number" value="${room.x}" min="0" max="${BW-room.w}" onchange="setProp('x',+this.value)"></div>
+            <div class="prop-field"><label>Y Position (ft)</label><input class="prop-input prop-input-sm" type="number" value="${room.y}" min="0" max="${BH-room.h}" onchange="setProp('y',+this.value)"></div>
+        </div>
+        <div class="prop-row-inline">
+            <div class="prop-field"><label>Width (ft)</label><input class="prop-input prop-input-sm" type="number" id="pW" value="${room.w}" min="2" max="${BW-room.x}" onchange="setProp('w',+this.value)"></div>
+            <div class="prop-field"><label>Height (ft)</label><input class="prop-input prop-input-sm" type="number" id="pH" value="${room.h}" min="2" max="${BH-room.y}" onchange="setProp('h',+this.value)"></div>
+        </div>
+        <div class="prop-field" style="margin-bottom:10px">
+            <label>Target Area (sq ft)</label>
+            <input class="prop-input" type="number" id="pArea" value="${room.w * room.h}" min="4" max="${BW*BH}" onchange="setAreaProp(+this.value)">
+            <span style="font-size:10px;color:var(--text3);display:block;margin-top:2px">Adjusts height automatically to fit area</span>
+        </div>
+        <div class="prop-field">
+            <label>Color</label>
+            <div class="color-grid">${ROOM_COLORS.map(c=>`<button class="color-swatch${c===room.color?' active':''}" style="background:${c}" onclick="setProp('color','${c}')"></button>`).join('')}</div>
+        </div>
+    `;
+    document.getElementById('propsContent').innerHTML = html;
+}
+
+function setProp(key, val) {
+    const room = curRooms().find(r=>r.id===selRoom);
+    if (!room) return;
+    if (key==='x') val = clamp(val, 0, BW-room.w);
+    if (key==='y') val = clamp(val, 0, BH-room.h);
+    if (key==='w') val = clamp(val, 2, BW-room.x);
+    if (key==='h') val = clamp(val, 2, BH-room.y);
+    room[key] = val;
+    pushHistory();
+    render();
+    updateProps();
+}
+
+function setAreaProp(targetArea) {
+    const room = curRooms().find(r => r.id === selRoom);
+    if (!room || targetArea <= 0) return;
+    let newH = Math.round(targetArea / room.w);
+    newH = clamp(newH, 2, BH - room.y);
+    room.h = newH;
+    pushHistory(); render(); updateProps();
+}
+
+function setTool(t) {
+    curTool = t;
+    document.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b.dataset.tool===t));
+}
+
+function setAddType(type) {
+    addType = type;
+    setTool('add');
+    document.querySelectorAll('.palette-item').forEach(b => b.classList.toggle('active', b.dataset.type===type));
+}
+
+// ======================== FLOOR & HISTORY MANAGEMENT ========================
+function setFloor(f) {
+    curFloor = f;
+    deselectRoom();
+    document.querySelectorAll('.floor-btn').forEach(b => b.classList.toggle('active', b.dataset.floor===f));
+    render();
+    if (is3DMode) {
+        const sel = document.getElementById('select3DFloor');
+        if (sel) sel.value = f;
+        set3DFloorView(f);
+    }
+}
+
+function resetFloor() {
+    if (!confirm('Reset this floor to default layout?')) return;
+    const def = makeFloors();
+    floors[curFloor] = def[curFloor];
+    pushHistory(); deselectRoom(); render();
+}
+
+function pushHistory() {
+    history = history.slice(0, histIdx + 1);
+    history.push(JSON.parse(JSON.stringify(floors)));
+    histIdx = history.length - 1;
+    updateHistBtns();
+}
+
+function undo() {
+    if(histIdx>0){histIdx--;floors=JSON.parse(JSON.stringify(history[histIdx]));deselectRoom();render();updateHistBtns();}
+}
+
+function redo() {
+    if(histIdx<history.length-1){histIdx++;floors=JSON.parse(JSON.stringify(history[histIdx]));deselectRoom();render();updateHistBtns();}
+}
+
+function updateHistBtns() {
+    document.getElementById('btnUndo').classList.toggle('disabled', histIdx<=0);
+    document.getElementById('btnRedo').classList.toggle('disabled', histIdx>=history.length-1);
+}
+
+function toggleLayer(id) {
+    layers[id] = !layers[id];
+    document.querySelectorAll(`.layer-toggle[data-layer="${id}"]`).forEach(t => t.classList.toggle('on', layers[id]));
+    render();
+    if (is3DMode) build3DScene();
+}
+
+function exportPNG() {
+    const svg = document.getElementById('canvas');
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement('canvas');
+    canvas.width = SVG_W * 2; canvas.height = SVG_H * 2;
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.onload = () => {
+        ctx.fillStyle = '#1e1e2e';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const a = document.createElement('a');
+        a.download = `floor-plan-${curFloor}.png`;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+    };
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+}
+
+// ======================== INIT UI ========================
+function initUI() {
+    const tabsEl = document.getElementById('floorTabs');
+    [{id:'ground',l:'Ground'},{id:'first',l:'1st Floor'},{id:'second',l:'2nd Floor'},{id:'third',l:'3rd Floor'}].forEach(f => {
+        const btn = document.createElement('button');
+        btn.className = 'floor-btn' + (f.id===curFloor?' active':'');
+        btn.dataset.floor = f.id;
+        btn.textContent = f.l;
+        btn.onclick = () => setFloor(f.id);
+        tabsEl.appendChild(btn);
+    });
+
+    const toolGrid = document.getElementById('toolGrid');
+    TOOLS.forEach(t => {
+        const btn = document.createElement('button');
+        btn.className = 'tool-btn' + (t.id===curTool?' active':'');
+        btn.dataset.tool = t.id;
+        btn.innerHTML = `<span class="tool-icon">${t.icon}</span>${t.label}`;
+        btn.onclick = () => setTool(t.id);
+        toolGrid.appendChild(btn);
+    });
+
+    const palEl = document.getElementById('paletteList');
+    Object.entries(PRESETS).forEach(([key, p]) => {
+        const btn = document.createElement('button');
+        btn.className = 'palette-item';
+        btn.dataset.type = key;
+        btn.innerHTML = `<span class="palette-icon">${p.icon}</span><span>${p.name}</span><span class="palette-color" style="background:${p.color}"></span>`;
+        btn.onclick = () => setAddType(key);
+        palEl.appendChild(btn);
+    });
+
+    const layersEl = document.getElementById('layersList');
+    LAYER_DEFS.forEach(l => {
+        const row = document.createElement('div');
+        row.className = 'layer-row';
+        row.innerHTML = `<div class="layer-toggle${l.on?' on':''}" data-layer="${l.id}" onclick="toggleLayer('${l.id}')"><div class="knob"></div></div><span class="layer-name"><span class="layer-dot" style="background:${l.dot}"></span>${l.label}</span>`;
+        layersEl.appendChild(row);
+    });
+
+    pushHistory();
+    updateHistBtns();
+    render();
+}
+
+// ======================== THREE.JS 3D ENGINE ========================
+let is3DMode = false;
+let isExploded = false;
+let isAutoRotate = false;
+let wallHeight3D = 9;
+let explodeAmount = 0;
+let targetExplode = 0;
+let scene3D, camera3D, renderer3D, controls3D, animReq3D;
+let floor3DGroups = {};
+let view3DFloor = 'all';
+
+// Precise Riser Pipe & Wiring Lines connecting through exact Shaft 1 & Shaft 2 locations
+const PLUMBING_PIPES = { 
+    lines: [
+        [[24, 20], [1, 14]],        // Borewell Sump line to Shaft 1 (West Wall x:0..2, y:10..18)
+        [[1, 14], [3, 5]],          // Water supply line from Shaft 1 to Master Bath
+        [[1, 14], [12, 20]],        // Water supply line from Shaft 1 to Kitchen
+    ] 
+};
+const DRAINAGE_PIPES = { 
+    lines: [
+        [[3, 5], [1, 14]],          // Master Bath waste drain directly into Shaft 1 Drop
+        [[12, 20], [1, 14]],        // Kitchen drain into Shaft 1 Drop
+        [[1, 14], [4.5, 14]],       // Shaft 1 Drop directly into Septic Tank (x:2..7, y:10..18)
+    ] 
+};
+const ELECTRICAL_WIRING = { 
+    lines: [
+        [[27, 21.5], [12, 22]],     // Feed from East Road to Shaft 2 Riser (North Wall x:10..14, y:21..23)
+        [[12, 22], [12, 20]],       // Feeder to Kitchen Agneya Panel
+        [[12, 22], [5, 5]],         // Circuit to Master Bedroom
+    ] 
+};
+
+function set3DFloorView(val) {
+    view3DFloor = val;
+    if (controls3D) {
+        controls3D.target.set(BW / 2, view3DFloor === 'all' ? 10 : 4, BH / 2);
+    }
+}
+
+function toggle3DMode() {
+    is3DMode = !is3DMode;
+    const btn = document.getElementById('btn3DMode');
+    const wrap2D = document.getElementById('canvas2DWrap');
+    const container3D = document.getElementById('container3D');
+
+    if (is3DMode) {
+        if (typeof THREE === 'undefined') {
+            alert('Three.js 3D library offline.');
+            is3DMode = false;
+            return;
+        }
+        btn.textContent = '📐 2D Blueprint View';
+        btn.style.background = 'var(--success)';
+        wrap2D.style.display = 'none';
+        container3D.style.display = 'block';
+        if (!renderer3D) init3DEngine();
+        setTimeout(resize3D, 50);
+        build3DScene();
+        animate3D();
+    } else {
+        btn.textContent = '🎲 3D Animated View';
+        btn.style.background = 'var(--accent)';
+        wrap2D.style.display = 'flex';
+        container3D.style.display = 'none';
+        if (animReq3D) cancelAnimationFrame(animReq3D);
+    }
+}
+
+function resize3D() {
+    if (!renderer3D || !camera3D) return;
+    const wrap = document.querySelector('.canvas-wrap');
+    const w = wrap ? wrap.clientWidth : window.innerWidth - 480;
+    const h = wrap ? wrap.clientHeight : window.innerHeight - 80;
+    if (w > 50 && h > 50) {
+        camera3D.aspect = w / h;
+        camera3D.updateProjectionMatrix();
+        renderer3D.setSize(w, h);
+    }
+}
+
+function init3DEngine() {
+    const container = document.getElementById('webgl3D');
+    const width = container.clientWidth || window.innerWidth - 480;
+    const height = container.clientHeight || window.innerHeight - 80;
+
+    scene3D = new THREE.Scene();
+    scene3D.background = new THREE.Color(0x0a0f1a);
+    scene3D.fog = new THREE.FogExp2(0x0a0f1a, 0.008);
+
+    camera3D = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
+    camera3D.position.set(40, 50, 60);
+
+    renderer3D = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer3D.setSize(width, height);
+    renderer3D.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer3D.shadowMap.enabled = true;
+    renderer3D.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer3D.domElement);
+
+    const ControlsClass = THREE.OrbitControls || window.OrbitControls;
+    if (ControlsClass) {
+        controls3D = new ControlsClass(camera3D, renderer3D.domElement);
+        controls3D.enableDamping = true;
+        controls3D.dampingFactor = 0.05;
+        controls3D.maxPolarAngle = Math.PI / 2.05;
+    }
+
+    scene3D.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    dirLight.position.set(50, 80, 40);
+    dirLight.castShadow = true;
+    scene3D.add(dirLight);
+
+    const pointLight = new THREE.PointLight(0x818cf8, 1.2, 100);
+    pointLight.position.set(13.5, 30, 11.5);
+    scene3D.add(pointLight);
+
+    window.addEventListener('resize', resize3D);
+}
+
+function build3DScene() {
+    Object.values(floor3DGroups).forEach(g => scene3D.remove(g));
+    floor3DGroups = {};
+
+    const groundGeo = new THREE.PlaneGeometry(60, 60);
+    const groundMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.8 });
+    const groundMesh = new THREE.Mesh(groundGeo, groundMat);
+    groundMesh.rotation.x = -Math.PI / 2;
+    groundMesh.position.set(13.5, -0.1, 11.5);
+    groundMesh.receiveShadow = true;
+    scene3D.add(groundMesh);
+
+    const floorKeys = ['ground', 'first', 'second', 'third'];
+    const floorHeights = { ground: 0, first: 10, second: 20, third: 30 };
+
+    floorKeys.forEach(fKey => {
+        const fGroup = new THREE.Group();
+        fGroup.position.y = (view3DFloor === 'all' ? floorHeights[fKey] : 0);
+        fGroup.visible = (view3DFloor === 'all' || view3DFloor === fKey);
+
+        const slabGeo = new THREE.BoxGeometry(BW, 0.4, BH);
+        const slabMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.5 });
+        const slabMesh = new THREE.Mesh(slabGeo, slabMat);
+        slabMesh.position.set(BW / 2, -0.2, BH / 2);
+        slabMesh.receiveShadow = true;
+        fGroup.add(slabMesh);
+
+        (floors[fKey] || []).forEach(r => {
+            const tileGeo = new THREE.BoxGeometry(r.w - 0.1, 0.1, r.h - 0.1);
+            const tileMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(r.color || '#4338ca'), roughness: 0.4 });
+            const tileMesh = new THREE.Mesh(tileGeo, tileMat);
+            tileMesh.position.set(r.x + r.w / 2, 0.05, r.y + r.h / 2);
+            tileMesh.receiveShadow = true;
+            fGroup.add(tileMesh);
+
+            create3DRoomWalls(fGroup, r.x, r.y, r.w, r.h, wallHeight3D);
+        });
+
+        // Exact 3D Shaft Columns (Shaft 1 on West Wall x:0..2, y:10..18; Shaft 2 on North Wall x:10..14, y:21..23)
+        create3DShaftColumn(fGroup, 0, 10, 2, 8, wallHeight3D, '#0284c7');
+        create3DShaftColumn(fGroup, 10, 21, 4, 2, wallHeight3D, '#fbbf24');
+
+        if (fKey === 'ground') {
+            // Septic Tank directly behind Shaft 1 (x:2..7, y:10..18)
+            const septicGeo = new THREE.BoxGeometry(5, 4, 8);
+            const septicMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, opacity: 0.8, transparent: true });
+            const septicMesh = new THREE.Mesh(septicGeo, septicMat);
+            septicMesh.position.set(4.5, 2, 14);
+            fGroup.add(septicMesh);
+
+            const boreGeo = new THREE.CylinderGeometry(2, 2, 6, 16);
+            const boreMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.5, roughness: 0.2 });
+            const boreMesh = new THREE.Mesh(boreGeo, boreMat);
+            boreMesh.position.set(24, 3, 20);
+            fGroup.add(boreMesh);
+        }
+
+        create3DStairs(fGroup, 0, 10, 6, 7);
+
+        if (layers.plumbing && typeof PLUMBING_PIPES !== 'undefined') create3DPipes(fGroup, PLUMBING_PIPES.lines, 0x60a5fa, 0.2);
+        if (layers.drainage && typeof DRAINAGE_PIPES !== 'undefined') create3DPipes(fGroup, DRAINAGE_PIPES.lines, 0x0284c7, 0.25);
+        if (layers.electrical && typeof ELECTRICAL_WIRING !== 'undefined') create3DPipes(fGroup, ELECTRICAL_WIRING.lines, 0xfbbf24, 0.15);
+
+        scene3D.add(fGroup);
+        floor3DGroups[fKey] = fGroup;
+    });
+
+    if (controls3D) controls3D.target.set(BW / 2, 10, BH / 2);
+}
+
+function create3DShaftColumn(group, x, y, w, h, height, colorHex) {
+    const shaftMat = new THREE.MeshStandardMaterial({ color: colorHex, opacity: 0.6, transparent: true, roughness: 0.3 });
+    const geo = new THREE.BoxGeometry(w, height, h);
+    const mesh = new THREE.Mesh(geo, shaftMat);
+    mesh.position.set(x + w / 2, height / 2, y + h / 2);
+    group.add(mesh);
+}
+
+function create3DRoomWalls(group, x, y, w, h, height) {
+    const wallThick = 0.3;
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.7 });
+    const specs = [
+        { w: w, h: wallThick, d: height, cx: x + w / 2, cy: y },
+        { w: w, h: wallThick, d: height, cx: x + w / 2, cy: y + h },
+        { w: wallThick, h: h, d: height, cx: x, cy: y + h / 2 },
+        { w: wallThick, h: h, d: height, cx: x + w, cy: y + h / 2 },
+    ];
+
+    specs.forEach(s => {
+        const geo = new THREE.BoxGeometry(s.w, s.d, s.h);
+        const mesh = new THREE.Mesh(geo, wallMat);
+        mesh.position.set(s.cx, s.d / 2, s.cy);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        group.add(mesh);
+    });
+}
+
+function create3DStairs(group, x, y, w, h) {
+    const steps = 10, stepH = 0.8, stepDepth = h / steps;
+    const stairMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.6 });
+
+    for (let i = 0; i < steps; i++) {
+        const geo = new THREE.BoxGeometry(w, (i + 1) * stepH, stepDepth);
+        const mesh = new THREE.Mesh(geo, stairMat);
+        mesh.position.set(x + w / 2, ((i + 1) * stepH) / 2, y + i * stepDepth + stepDepth / 2);
+        mesh.castShadow = true;
+        group.add(mesh);
+    }
+}
+
+function create3DPipes(group, lines, colorHex, radius) {
+    const mat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.3, roughness: 0.2, metalness: 0.8 });
+    lines.forEach(pts => {
+        for (let i = 0; i < pts.length - 1; i++) {
+            const p1 = new THREE.Vector3(pts[i][0], 1, pts[i][1]);
+            const p2 = new THREE.Vector3(pts[i + 1][0], 1, pts[i + 1][1]);
+            const dist = p1.distanceTo(p2);
+            if (dist > 0.1) {
+                const geo = new THREE.CylinderGeometry(radius, radius, dist, 8);
+                const mesh = new THREE.Mesh(geo, mat);
+                const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+                mesh.position.copy(mid);
+                const dir = new THREE.Vector3().subVectors(p2, p1).normalize();
+                mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+                group.add(mesh);
+            }
+        }
+    });
+}
+
+function animate3D() {
+    animReq3D = requestAnimationFrame(animate3D);
+    explodeAmount += (targetExplode - explodeAmount) * 0.1;
+    const heights = { ground: 0, first: 10, second: 20, third: 30 };
+
+    Object.entries(floor3DGroups).forEach(([fKey, grp]) => {
+        if (!grp) return;
+        const mult = fKey === 'ground' ? 0 : fKey === 'first' ? 1 : fKey === 'second' ? 2 : 3;
+        if (view3DFloor === 'all') {
+            grp.position.y = heights[fKey] + mult * explodeAmount * 15;
+            grp.visible = true;
+        } else {
+            grp.position.y = 0;
+            grp.visible = (fKey === view3DFloor);
+        }
+    });
+
+    if (controls3D) {
+        controls3D.autoRotate = isAutoRotate;
+        controls3D.autoRotateSpeed = 2.0;
+        controls3D.update();
+    }
+
+    if (renderer3D && scene3D && camera3D) {
+        renderer3D.render(scene3D, camera3D);
+    }
+}
+
+function toggle3DExplode() {
+    isExploded = !isExploded;
+    targetExplode = isExploded ? 1 : 0;
+    document.getElementById('btnExplode').textContent = isExploded ? '🏢 Collapse Floors' : '💥 Explode Floors';
+}
+
+function toggle3DAutoRotate() {
+    isAutoRotate = !isAutoRotate;
+    document.getElementById('btnRotate').textContent = isAutoRotate ? '⏸️ Pause Rotate' : '🔄 Auto Rotate';
+}
+
+function update3DWallHeight(val) {
+    wallHeight3D = parseFloat(val);
+    if (is3DMode) build3DScene();
+}
+
+// Start Application
+initUI();
+</script>
+</body>
+</html>
