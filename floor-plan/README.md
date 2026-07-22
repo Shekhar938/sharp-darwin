@@ -8,9 +8,51 @@ A high-performance, standalone, zero-dependency interactive 2D Blueprint and 3D 
 
 ---
 
-## 📌 Project Overview
+## 🚀 How to Run the Project (Clear Step-by-Step Instructions)
 
-This project provides a complete architectural planning solution for a **27' × 23' (621 sq ft)** plot with road access on the **East**. It features real-time 2D SVG room editing, grid snapping, custom area target sizing, Vastu Shastra zone mapping, service riser conduits (Water, Sewage, Electrical), and an animated Three.js 3D WebGL engine with floor isolation and exploded view capabilities.
+### Option 1: Direct Double-Click (Recommended - No Installation Required)
+Since the application has zero network dependencies and all libraries (Three.js r128 & OrbitControls) are bundled inline:
+
+1. Open **Windows File Explorer** and navigate to:
+   ```text
+   C:\Users\shkr9\Documents\antigravity\sharp-darwin\floor-plan\
+   ```
+2. Double-click on **`index.html`**.
+3. It will instantly open in your default browser (Chrome, Edge, Firefox, or Safari) with full 2D interactive editing and 3D WebGL capabilities.
+
+**Or via Windows PowerShell**:
+```powershell
+Start-Process "C:\Users\shkr9\Documents\antigravity\sharp-darwin\floor-plan\index.html"
+```
+
+---
+
+### Option 2: Local HTTP Server (Node.js)
+If you prefer running the application through a local web server:
+
+1. Open terminal/PowerShell in the project folder:
+   ```bash
+   cd C:\Users\shkr9\Documents\antigravity\sharp-darwin\floor-plan
+   ```
+2. Start the local server:
+   ```bash
+   node server.js
+   ```
+3. Open your browser and go to:
+   ```text
+   http://localhost:3000
+   ```
+
+---
+
+### Option 3: Rebuilding `index.html` from Template (Developer Mode)
+If you modify `template.html` or update the 3D libraries:
+
+1. Open terminal inside `floor-plan`:
+   ```bash
+   node build_clean.js
+   ```
+2. This script bundles `template.html`, `three.min.js`, and `OrbitControls.js` into a fresh, standalone `index.html`.
 
 ---
 
@@ -89,20 +131,3 @@ All structural infrastructure elements are permanently fixed with exact hand-dra
 - **2D Canvas Engine**: SVG Vector Graphics with 1-foot grid snapping, drag-and-drop room repositioning, interactive corner resizing, and target sq. ft. auto-scaling.
 - **3D WebGL Engine**: Three.js (r128) + OrbitControls with soft shadow mapping, 3D extruded room walls, translucent utility shaft columns, 3D stair steps, and animated floor explosion stack (`💥 Explode`).
 - **Offline / Zero Network Dependency**: Three.js and OrbitControls are fully bundled inline directly inside `index.html` for instant local execution via `file:///` URLs without requiring a local web server or internet connection.
-
----
-
-## 🚀 How to Run Locally
-
-1. Double-click [index.html](file:///C:/Users/shkr9/Documents/antigravity/sharp-darwin/floor-plan/index.html) directly in any web browser (Chrome, Edge, Firefox, Safari).
-2. Alternatively, build from template using Node.js:
-   ```bash
-   node build_clean.js
-   ```
-
----
-
-## 📜 Version Control & Branch
-
-- **Branch**: `feature/vastu-floor-plan-3d`
-- **Author**: Architectural Agentic Assistant
