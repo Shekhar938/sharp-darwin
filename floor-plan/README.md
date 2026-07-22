@@ -14,15 +14,14 @@ A high-performance, standalone, zero-dependency interactive 2D Blueprint and 3D 
 Since the application has zero network dependencies and all libraries (Three.js r128 & OrbitControls) are bundled inline:
 
 1. Open **Windows File Explorer** and navigate to:
-   ```text
-   C:\Users\shkr9\Documents\antigravity\sharp-darwin\floor-plan\
+   ``` repo\sharp-darwin\floor-plan\
    ```
 2. Double-click on **`index.html`**.
 3. It will instantly open in your default browser (Chrome, Edge, Firefox, or Safari) with full 2D interactive editing and 3D WebGL capabilities.
 
 **Or via Windows PowerShell**:
 ```powershell
-Start-Process "C:\Users\shkr9\Documents\antigravity\sharp-darwin\floor-plan\index.html"
+Start-Process "repo\sharp-darwin\floor-plan\index.html"
 ```
 
 ---
@@ -32,7 +31,7 @@ If you prefer running the application through a local web server:
 
 1. Open terminal/PowerShell in the project folder:
    ```bash
-   cd C:\Users\shkr9\Documents\antigravity\sharp-darwin\floor-plan
+   cd repo\sharp-darwin\floor-plan
    ```
 2. Start the local server:
    ```bash
