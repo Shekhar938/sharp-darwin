@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Floor Plan Designer | Mobile Optimized Vastu 2D/3D</title>
+    <title>Floor Plan Designer | Customizable Vastu 2D/3D</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
@@ -56,9 +56,9 @@
         /* ===== MAIN LAYOUT ===== */
         .main { display: flex; flex: 1; overflow: hidden; position: relative; }
 
-        /* ===== LEFT & RIGHT PANELS (Desktop Default) ===== */
-        .left-panel { width: 230px; padding: 10px; background: var(--base); display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.03); z-index: 10; transition: transform .3s ease; }
-        .right-panel { width: 250px; padding: 10px; background: var(--base); display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.03); z-index: 10; transition: transform .3s ease; }
+        /* ===== LEFT & RIGHT PANELS ===== */
+        .left-panel { width: 250px; padding: 10px; background: var(--base); display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.03); z-index: 10; transition: transform .3s ease; }
+        .right-panel { width: 260px; padding: 10px; background: var(--base); display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.03); z-index: 10; transition: transform .3s ease; }
         .panel-card { background: var(--surface); border-radius: 14px; box-shadow: var(--neo-out); padding: 10px; }
         .panel-title { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); font-weight: 700; margin-bottom: 8px; }
         .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
@@ -81,7 +81,7 @@
         #webgl3D { width: 100%; height: 100%; }
         #webgl3D canvas { width: 100%!important; height: 100%!important; display: block; outline: none; touch-action: none; }
 
-        /* ===== RIGHT PANEL PROPERTIES ===== */
+        /* ===== PROPERTIES & FIELDS ===== */
         .prop-field { margin-bottom: 8px; }
         .prop-field label { display: block; font-size: 10px; color: var(--text2); margin-bottom: 3px; font-weight: 500; }
         .prop-input { width: 100%; padding: 6px 8px; border: none; background: var(--surface); color: var(--text); font-family: inherit; font-size: 11px; border-radius: 6px; box-shadow: var(--neo-in); outline: none; }
@@ -110,7 +110,7 @@
         .mobile-nav-btn.active { color: var(--accent); }
         .mobile-nav-btn span { font-size: 16px; }
 
-        /* ===== RESPONSIVE BREAKPOINT FOR PHONES & TABLETS ===== */
+        /* ===== RESPONSIVE BREAKPOINT FOR PHONES ===== */
         @media (max-width: 768px) {
             header { padding: 6px 10px; }
             .brand h1 { font-size: 12px; }
@@ -148,11 +148,12 @@
             <div class="brand-icon">📐</div>
             <div>
                 <h1>Floor Plan Designer</h1>
-                <span>27' × 23' · Mobile & Touch · G+3</span>
+                <span id="headerSub">Custom Plot & Floors</span>
             </div>
         </div>
         <div class="header-center" id="floorTabs"></div>
         <div class="header-actions">
+            <button class="floor-btn" onclick="openAddFloorModal()" style="background:var(--surface2);color:var(--accent2)">➕ Floor</button>
             <button class="act-btn" id="btnUndo" onclick="undo()" title="Undo">↩️</button>
             <button class="act-btn" id="btnRedo" onclick="redo()" title="Redo">↪️</button>
             <button class="act-btn" onclick="exportPNG()" title="Export PNG">📷</button>
@@ -163,17 +164,35 @@
     <div class="main">
         <aside class="left-panel" id="leftPanel">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                <span class="panel-title" style="margin:0">Add & Edit Tools</span>
+                <span class="panel-title" style="margin:0">Plot & Tools</span>
                 <button onclick="toggleMobileDrawer('left')" style="border:none;background:none;color:var(--text2);font-size:16px;cursor:pointer">✕</button>
             </div>
+
+            <!-- Plot Dimensions Customizer Card -->
+            <div class="panel-card">
+                <div class="panel-title">📐 Plot Dimensions</div>
+                <div class="prop-row-inline" style="margin-bottom:6px">
+                    <div class="prop-field"><label>Width (W-E ft)</label><input class="prop-input prop-input-sm" type="number" id="plotWInput" value="27" min="10" max="100"></div>
+                    <div class="prop-field"><label>Height (S-N ft)</label><input class="prop-input prop-input-sm" type="number" id="plotHInput" value="23" min="10" max="100"></div>
+                </div>
+                <button class="palette-item" onclick="updatePlotDimensions()" style="justify-content:center;background:var(--surface2);color:var(--accent2);font-weight:600">
+                    🔄 Resize Plot Boundary
+                </button>
+            </div>
+
+            <!-- Editing Tools -->
             <div class="panel-card">
                 <div class="panel-title">Tools</div>
                 <div class="tool-grid" id="toolGrid"></div>
             </div>
+
+            <!-- Preset Rooms Adder -->
             <div class="panel-card">
                 <div class="panel-title">Add Room</div>
                 <div class="palette-list" id="paletteList"></div>
             </div>
+
+            <!-- Custom Feet Room Adder -->
             <div class="panel-card">
                 <div class="panel-title">Custom Feet Room</div>
                 <div class="prop-field" style="margin-bottom:4px">
@@ -181,28 +200,23 @@
                     <input class="prop-input" id="cName" value="Custom Room" style="font-size:10px;padding:4px 6px">
                 </div>
                 <div class="prop-row-inline" style="margin-bottom:4px">
-                    <div class="prop-field"><label>Width (ft)</label><input class="prop-input prop-input-sm" type="number" id="cW" value="10" min="2" max="23"></div>
-                    <div class="prop-field"><label>Height (ft)</label><input class="prop-input prop-input-sm" type="number" id="cH" value="10" min="2" max="26"></div>
+                    <div class="prop-field"><label>Width (ft)</label><input class="prop-input prop-input-sm" type="number" id="cW" value="10" min="2" max="50"></div>
+                    <div class="prop-field"><label>Height (ft)</label><input class="prop-input prop-input-sm" type="number" id="cH" value="10" min="2" max="50"></div>
                 </div>
                 <button class="palette-item" onclick="addCustomRoom()" style="justify-content:center;background:var(--accent);color:white;margin-top:4px;font-weight:600">
-                    ➕ Add Room
+                    ➕ Add Custom Room
                 </button>
             </div>
         </aside>
 
         <div class="canvas-wrap">
             <div class="canvas-inner" id="canvas2DWrap">
-                <svg id="canvas" viewBox="0 0 620 540" xmlns="http://www.w3.org/2000/svg"></svg>
+                <svg id="canvas" xmlns="http://www.w3.org/2000/svg"></svg>
             </div>
             <div id="container3D">
                 <div id="webgl3D"></div>
                 <div id="controls3DPanel" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:var(--surface);padding:6px 12px;border-radius:10px;box-shadow:var(--neo-out);display:flex;align-items:center;gap:8px;z-index:30;flex-wrap:wrap;justify-content:center">
                     <select id="select3DFloor" onchange="set3DFloorView(this.value)" class="prop-input" style="width:auto;font-size:10px;padding:4px 8px;background:var(--surface2);color:white;cursor:pointer">
-                        <option value="all">🏢 All Floors</option>
-                        <option value="ground">🚗 Ground</option>
-                        <option value="first">🛋️ 1st Floor</option>
-                        <option value="second">🛏️ 2nd Floor</option>
-                        <option value="third">☀️ 3rd Floor</option>
                     </select>
                     <button class="floor-btn" onclick="toggle3DExplode()" id="btnExplode">💥 Explode</button>
                     <button class="floor-btn" onclick="toggle3DAutoRotate()" id="btnRotate">🔄 Rotate</button>
@@ -212,13 +226,26 @@
 
         <aside class="right-panel" id="rightPanel">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                <span class="panel-title" style="margin:0">Room Properties & Layers</span>
+                <span class="panel-title" style="margin:0">Structures & Layers</span>
                 <button onclick="toggleMobileDrawer('right')" style="border:none;background:none;color:var(--text2);font-size:16px;cursor:pointer">✕</button>
             </div>
+
+            <!-- Fixed Structures Manager -->
+            <div class="panel-card">
+                <div class="panel-title">🏗️ Fixed Structures</div>
+                <div class="palette-list" id="fixedPresetsList"></div>
+                <button class="palette-item" onclick="openAddFixedModal()" style="justify-content:center;background:var(--surface2);color:var(--accent2);margin-top:6px;font-weight:600">
+                    ➕ Add Fixed Structure
+                </button>
+            </div>
+
+            <!-- Active Selection Properties -->
             <div class="panel-card">
                 <div class="panel-title">Properties</div>
-                <div id="propsContent"><div style="font-size:10px;color:var(--text3);text-align:center;padding:8px 0">Select a room to edit</div></div>
+                <div id="propsContent"><div style="font-size:10px;color:var(--text3);text-align:center;padding:8px 0">Select a room or structure</div></div>
             </div>
+
+            <!-- Layers Control -->
             <div class="panel-card">
                 <div class="panel-title">Layers</div>
                 <div id="layersList"></div>
@@ -232,10 +259,10 @@
             <span>📐</span>Canvas
         </button>
         <button class="mobile-nav-btn" id="mBtnAdd" onclick="toggleMobileDrawer('left')">
-            <span>➕</span>Add Rooms
+            <span>📐</span>Plot & Tools
         </button>
         <button class="mobile-nav-btn" id="mBtnProps" onclick="toggleMobileDrawer('right')">
-            <span>⚙️</span>Properties
+            <span>🏗️</span>Structures
         </button>
     </nav>
 
@@ -247,41 +274,44 @@
 </div>
 
 <script>
-// ======================== GLOBAL UTILITIES & CONFIG ========================
+// ======================== GLOBAL DYNAMIC STATE ========================
 function gid() { return 'r_' + Math.random().toString(36).substr(2, 9); }
 
-const S = 20, BW = 27, BH = 23, PAD = 40;
-const SVG_W = BW * S + PAD * 2, SVG_H = BH * S + PAD * 2;
+let plot = { w: 27, h: 23 };
+let S = 20, BW = plot.w, BH = plot.h, PAD = 40;
+let SVG_W = BW * S + PAD * 2, SVG_H = BH * S + PAD * 2;
 
 function snap(v) { return Math.round(v); }
 function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
-function toggleMobileDrawer(side) {
-    const lp = document.getElementById('leftPanel');
-    const rp = document.getElementById('rightPanel');
-    const bCanvas = document.getElementById('mBtnCanvas');
-    const bAdd = document.getElementById('mBtnAdd');
-    const bProps = document.getElementById('mBtnProps');
+// Dynamic Floor Configuration State
+let floorConfig = [
+    { id: 'ground', label: 'Ground Floor' },
+    { id: 'first',  label: '1st Floor' },
+    { id: 'second', label: '2nd Floor' },
+    { id: 'third',  label: '3rd Floor' }
+];
 
-    if (side === 'left') {
-        lp.classList.toggle('open');
-        rp.classList.remove('open');
-    } else if (side === 'right') {
-        rp.classList.toggle('open');
-        lp.classList.remove('open');
-    } else {
-        lp.classList.remove('open');
-        rp.classList.remove('open');
-    }
+let curFloor = 'first';
 
-    if (bCanvas && bAdd && bProps) {
-        bCanvas.classList.toggle('active', !lp.classList.contains('open') && !rp.classList.contains('open'));
-        bAdd.classList.toggle('active', lp.classList.contains('open'));
-        bProps.classList.toggle('active', rp.classList.contains('open'));
-    }
-}
+// Mutable Fixed Structures
+let fixedFeatures = [
+    { id:'stairs', name:'Staircase', x:0, y:10, w:6, h:7, color:'#475569', label:'Staircase (6\'×7\')', icon:'🪜', desc:'South Wall' },
+    { id:'shaft1', name:'West Shaft 1', x:0, y:10, w:2, h:8, color:'#0284c7', label:'Shaft 1 (8\'×2\')', icon:'⚙️', desc:'West Wall Shaft' },
+    { id:'septic', name:'Septic Tank', x:2, y:10, w:5, h:8, color:'#b91c1c', label:'Septic Tank (8\'×5\')', icon:'🛢️', desc:'West Wall' },
+    { id:'shaft2', name:'North Shaft 2', x:10, y:21, w:4, h:2, color:'#fbbf24', label:'Shaft 2 (4\'×2\')', icon:'⚡', desc:'North Wall Shaft' },
+    { id:'boring', name:'Borewell (Boring)', x:22, y:18, w:4, h:4, color:'#0284c7', label:'Boring', icon:'💧', desc:'North-East Corner' },
+];
 
-// ======================== PRESETS & CONSTANTS ========================
+const FIXED_PRESETS = {
+    staircase: { name:'Staircase', w:6, h:7, color:'#475569', icon:'🪜' },
+    shaft:     { name:'Utility Shaft', w:4, h:2, color:'#0284c7', icon:'⚙️' },
+    septic:    { name:'Septic Tank', w:8, h:5, color:'#b91c1c', icon:'🛢️' },
+    borewell:  { name:'Borewell / Sump', w:4, h:4, color:'#0284c7', icon:'💧' },
+    lift:      { name:'Lift / Elevator', w:6, h:6, color:'#6d28d9', icon:'🛗' },
+    watertank: { name:'Overhead Tank', w:6, h:6, color:'#0e7490', icon:'🚰' },
+};
+
 const PRESETS = {
     living:   { name:'Living Room',   w:12, h:10, color:'#166534', icon:'🛋️' },
     bedroom:  { name:'Bedroom',       w:10, h:9,  color:'#4338ca', icon:'🛏️' },
@@ -314,33 +344,11 @@ const LAYER_DEFS = [
     { id:'vastu',      label:'Vastu Zones',    dot:'#c084fc', on:false },
 ];
 
-const FIXED_FEATURES = [
-    { id:'stairs', name:'Staircase', x:0, y:10, w:6, h:7, color:'#475569', label:'Staircase (6\'×7\')', icon:'🪜', desc:'South Wall' },
-    { id:'shaft1', name:'West Plumbing Shaft', x:0, y:10, w:2, h:8, color:'#0284c7', label:'Shaft 1 (8\'×2\')', icon:'⚙️', desc:'West Wall Shaft' },
-    { id:'septic', name:'Septic Tank', x:2, y:10, w:5, h:8, color:'#b91c1c', label:'Septic Tank (8\'×5\')', icon:'🛢️', desc:'West Wall' },
-    { id:'shaft2', name:'North Electrical Shaft', x:10, y:21, w:4, h:2, color:'#fbbf24', label:'Shaft 2 (4\'×2\')', icon:'⚡', desc:'North Wall Shaft' },
-    { id:'boring', name:'Borewell (Boring)', x:22, y:18, w:4, h:4, color:'#0284c7', label:'Boring', icon:'💧', desc:'North-East Corner' },
-];
-
-const VASTU_ZONES = [
-    { name:'SW\nEarth',     x:0,  y:0,  w:9, h:7.67, color:'rgba(161,98,7,0.12)', tc:'#d97706' },
-    { name:'W\nSpace',      x:9,  y:0,  w:9, h:7.67, color:'rgba(226,232,240,0.06)', tc:'#cbd5e1' },
-    { name:'NW\nAir',       x:18, y:0,  w:9, h:7.67, color:'rgba(148,163,184,0.12)', tc:'#94a3b8' },
-    
-    { name:'S\nFame',       x:0,  y:7.67, w:9, h:7.67, color:'rgba(239,68,68,0.08)', tc:'#ef4444' },
-    { name:'Center\nBrahma',x:9,  y:7.67, w:9, h:7.67, color:'rgba(251,191,36,0.08)', tc:'#fbbf24' },
-    { name:'N\nWealth',     x:18, y:7.67, w:9, h:7.67, color:'rgba(52,211,153,0.10)', tc:'#34d399' },
-    
-    { name:'SE\nFire',      x:0,  y:15.33, w:9, h:7.67, color:'rgba(248,113,113,0.12)', tc:'#f87171' },
-    { name:'E\nRoad',       x:9,  y:15.33, w:9, h:7.67, color:'rgba(251,146,60,0.10)', tc:'#fb923c' },
-    { name:'NE\nBoring',    x:18, y:15.33, w:9, h:7.67, color:'rgba(96,165,250,0.14)', tc:'#60a5fa' },
-];
-
-function makeFloors() {
+function makeInitialFloors() {
     return {
         ground:[
             {id:gid(),name:'Parking Bay',x:7,y:7,w:11,h:11,color:'#334155',icon:'🚗',vastu:'Central Parking'},
-            {id:gid(),name:'Entrance Lobby (Road)',x:7,y:18,w:10,h:5,color:'#4a5568',icon:'🚪',vastu:'East Entrance'},
+            {id:gid(),name:'Entrance Lobby',x:7,y:18,w:10,h:5,color:'#4a5568',icon:'🚪',vastu:'East Entrance'},
             {id:gid(),name:'Utility / Store',x:0,y:0,w:6,h:7,color:'#374151',icon:'🔧',vastu:'SW Corner'},
         ],
         first:[
@@ -363,20 +371,136 @@ function makeFloors() {
     };
 }
 
-let curFloor = 'first';
-let floors = makeFloors();
+let floors = makeInitialFloors();
 let curTool = 'select';
 let addType = 'living';
 let selRoom = null;
+let selFixed = null;
 let drag = null;
 let history = [];
 let histIdx = -1;
 let layers = {};
 LAYER_DEFS.forEach(l => layers[l.id] = l.on);
 
-// ======================== STATE HELPERS ========================
+// ======================== PLOT & FLOOR MANAGEMENT ========================
+function updatePlotDimensions() {
+    const w = parseInt(document.getElementById('plotWInput').value) || 27;
+    const h = parseInt(document.getElementById('plotHInput').value) || 23;
+    plot.w = clamp(w, 10, 100);
+    plot.h = clamp(h, 10, 100);
+    BW = plot.w; BH = plot.h;
+    SVG_W = BW * S + PAD * 2; SVG_H = BH * S + PAD * 2;
+
+    // Clamp all rooms to new boundary
+    Object.keys(floors).forEach(fKey => {
+        floors[fKey].forEach(r => {
+            r.x = clamp(r.x, 0, BW - Math.min(r.w, BW));
+            r.y = clamp(r.y, 0, BH - Math.min(r.h, BH));
+            r.w = clamp(r.w, 2, BW - r.x);
+            r.h = clamp(r.h, 2, BH - r.y);
+        });
+    });
+
+    document.getElementById('statusInfo').textContent = `🏠 ${BW}'×${BH}' (${BW*BH} sqft)`;
+    document.getElementById('headerSub').textContent = `${BW}' × ${BH}' · Vastu Plot`;
+    pushHistory(); render(); updateProps();
+    if (is3DMode) build3DScene();
+}
+
+function openAddFloorModal() {
+    const name = prompt('Enter New Floor Name:', `Floor ${floorConfig.length}`);
+    if (!name) return;
+    const newId = 'fl_' + Math.random().toString(36).substr(2, 6);
+    floorConfig.push({ id: newId, label: name });
+    floors[newId] = [];
+    renderFloorTabs();
+    setFloor(newId);
+    pushHistory();
+}
+
+function deleteCurrentFloor() {
+    if (floorConfig.length <= 1) { alert('Cannot delete the only remaining floor!'); return; }
+    if (!confirm(`Delete ${floorConfig.find(f=>f.id===curFloor)?.label}?`)) return;
+    delete floors[curFloor];
+    floorConfig = floorConfig.filter(f => f.id !== curFloor);
+    curFloor = floorConfig[0].id;
+    renderFloorTabs();
+    setFloor(curFloor);
+    pushHistory();
+}
+
+function renderFloorTabs() {
+    const tabsEl = document.getElementById('floorTabs');
+    tabsEl.innerHTML = '';
+    floorConfig.forEach(f => {
+        const btn = document.createElement('button');
+        btn.className = 'floor-btn' + (f.id === curFloor ? ' active' : '');
+        btn.dataset.floor = f.id;
+        btn.textContent = f.label;
+        btn.onclick = () => setFloor(f.id);
+        tabsEl.appendChild(btn);
+    });
+
+    // Populate 3D Dropdown
+    const sel3D = document.getElementById('select3DFloor');
+    if (sel3D) {
+        sel3D.innerHTML = `<option value="all">🏢 All Floors (${floorConfig.length} Stack)</option>` +
+            floorConfig.map(f => `<option value="${f.id}">🏠 ${f.label}</option>`).join('');
+    }
+}
+
+// ======================== FIXED STRUCTURES CUSTOMIZER ========================
+function openAddFixedModal() {
+    const name = prompt('Enter Fixed Structure Name:', 'Custom Shaft');
+    if (!name) return;
+    const newFixed = {
+        id: gid(),
+        name,
+        x: 0, y: 0, w: 4, h: 4,
+        color: '#0284c7',
+        icon: '⚙️',
+        desc: 'Custom Fixed Feature'
+    };
+    fixedFeatures.push(newFixed);
+    selFixed = newFixed.id;
+    selRoom = null;
+    pushHistory(); render(); updateProps();
+    if (is3DMode) build3DScene();
+}
+
+function deleteFixedStructure(id) {
+    fixedFeatures = fixedFeatures.filter(ff => ff.id !== id);
+    if (selFixed === id) selFixed = null;
+    pushHistory(); render(); updateProps();
+    if (is3DMode) build3DScene();
+}
+
+// Mobile Drawer Toggle
+function toggleMobileDrawer(side) {
+    const lp = document.getElementById('leftPanel');
+    const rp = document.getElementById('rightPanel');
+    const bCanvas = document.getElementById('mBtnCanvas');
+    const bAdd = document.getElementById('mBtnAdd');
+    const bProps = document.getElementById('mBtnProps');
+
+    if (side === 'left') {
+        lp.classList.toggle('open'); rp.classList.remove('open');
+    } else if (side === 'right') {
+        rp.classList.toggle('open'); lp.classList.remove('open');
+    } else {
+        lp.classList.remove('open'); rp.classList.remove('open');
+    }
+
+    if (bCanvas && bAdd && bProps) {
+        bCanvas.classList.toggle('active', !lp.classList.contains('open') && !rp.classList.contains('open'));
+        bAdd.classList.toggle('active', lp.classList.contains('open'));
+        bProps.classList.toggle('active', rp.classList.contains('open'));
+    }
+}
+
+// State Helpers
 function curRooms() { return floors[curFloor] || []; }
-function deselectRoom() { selRoom = null; updateProps(); render(); }
+function deselectRoom() { selRoom = null; selFixed = null; updateProps(); render(); }
 
 function svgPos(e) {
     const svg = document.getElementById('canvas');
@@ -415,22 +539,12 @@ function render() {
         h += `<rect x="${PAD}" y="${PAD}" width="${BW*S}" height="${BH*S}" fill="url(#majorGrid)"/>`;
     }
 
-    if (layers.vastu) {
-        VASTU_ZONES.forEach(z => {
-            const zx = PAD + z.x*S, zy = PAD + z.y*S, zw = z.w*S, zh = z.h*S;
-            h += `<rect x="${zx}" y="${zy}" width="${zw}" height="${zh}" fill="${z.color}" stroke="${z.tc}" stroke-width="0.8" stroke-dasharray="3,3"/>`;
-            const lines = z.name.split('\n');
-            h += `<text x="${zx + zw/2}" y="${zy + zh/2 - 4}" text-anchor="middle" fill="${z.tc}" font-size="9" font-weight="700" opacity="0.8">${lines[0]}</text>`;
-            if(lines[1]) h += `<text x="${zx + zw/2}" y="${zy + zh/2 + 8}" text-anchor="middle" fill="${z.tc}" font-size="8" opacity="0.6">${lines[1]}</text>`;
-        });
-    }
-
     if (layers.fixed) {
-        FIXED_FEATURES.forEach(ff => {
-            if (curFloor !== 'ground' && ff.id !== 'stairs' && !ff.id.includes('shaft')) return;
+        fixedFeatures.forEach(ff => {
             const fx = PAD + ff.x*S, fy = PAD + ff.y*S, fw = ff.w*S, fh = ff.h*S;
-            h += `<g transform="translate(${fx},${fy})">
-                <rect width="${fw}" height="${fh}" fill="${ff.color}" fill-opacity="0.4" stroke="${ff.color}" stroke-width="2" stroke-dasharray="4,2" rx="4"/>
+            const isSel = (ff.id === selFixed);
+            h += `<g transform="translate(${fx},${fy})" style="cursor:pointer" onclick="selectFixedClick(event, '${ff.id}')">
+                <rect width="${fw}" height="${fh}" fill="${ff.color}" fill-opacity="${isSel?0.6:0.35}" stroke="${isSel?'#fbbf24':ff.color}" stroke-width="${isSel?3:2}" stroke-dasharray="4,2" rx="4"/>
                 <text x="${fw/2}" y="${fh/2 - 2}" text-anchor="middle" fill="#e2e8f0" font-size="10" font-weight="700">${ff.icon} ${ff.name}</text>
                 <text x="${fw/2}" y="${fh/2 + 10}" text-anchor="middle" fill="#94a3b8" font-size="8">${ff.w}' × ${ff.h}'</text>
             </g>`;
@@ -458,10 +572,10 @@ function render() {
     }
 
     if (layers.dims) {
-        h += `<text x="${PAD + BW*S/2}" y="${PAD - 12}" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600">27' WEST WALL</text>
-              <text x="${PAD + BW*S/2}" y="${PAD + BH*S + 20}" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600">27' EAST ROAD</text>
-              <text x="${PAD - 12}" y="${PAD + BH*S/2}" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" transform="rotate(-90 ${PAD-12} ${PAD+BH*S/2})">23' SOUTH</text>
-              <text x="${PAD + BW*S + 18}" y="${PAD + BH*S/2}" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" transform="rotate(90 ${PAD+BW*S+18} ${PAD+BH*S/2})">23' NORTH</text>`;
+        h += `<text x="${PAD + BW*S/2}" y="${PAD - 12}" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600">${BW}' WEST WALL</text>
+              <text x="${PAD + BW*S/2}" y="${PAD + BH*S + 20}" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600">${BW}' EAST ROAD</text>
+              <text x="${PAD - 12}" y="${PAD + BH*S/2}" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" transform="rotate(-90 ${PAD-12} ${PAD+BH*S/2})">${BH}' SOUTH</text>
+              <text x="${PAD + BW*S + 18}" y="${PAD + BH*S/2}" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" transform="rotate(90 ${PAD+BW*S+18} ${PAD+BH*S/2})">${BH}' NORTH</text>`;
     }
 
     svg.innerHTML = h;
@@ -472,15 +586,21 @@ function selectRoomClick(e, id) {
     if(e.cancelable) e.preventDefault();
     e.stopPropagation();
     if (curTool === 'delete') { deleteRoom(id); return; }
-    selRoom = id;
-    updateProps();
-    render();
+    selRoom = id; selFixed = null;
+    updateProps(); render();
+}
+
+function selectFixedClick(e, id) {
+    if(e.cancelable) e.preventDefault();
+    e.stopPropagation();
+    selFixed = id; selRoom = null;
+    updateProps(); render();
 }
 
 function startDrag(e, id) {
     if (curTool !== 'move' && curTool !== 'select') return;
     e.stopPropagation();
-    selRoom = id;
+    selRoom = id; selFixed = null;
     const room = curRooms().find(r => r.id === id);
     if (!room) return;
     const pos = svgPos(e);
@@ -489,7 +609,7 @@ function startDrag(e, id) {
 
 function startResize(e, id, handle) {
     e.stopPropagation();
-    selRoom = id;
+    selRoom = id; selFixed = null;
     const room = curRooms().find(r => r.id === id);
     if (!room) return;
     const pos = svgPos(e);
@@ -522,8 +642,7 @@ function handlePointerMove(e) {
         if(h.includes('s')){nh=snap(drag.oh+dy);nh=clamp(nh,2,BH-r.y)}
         if(h.includes('n')){ny=snap(drag.oy+dy);ny=clamp(ny,0,drag.oy+drag.oh-2);nh=drag.oy+drag.oh-ny}
         r.x=nx;r.y=ny;r.w=nw;r.h=nh;
-        render();
-        updateProps();
+        render(); updateProps();
     }
 }
 
@@ -546,7 +665,7 @@ document.getElementById('canvas').addEventListener('click', (e) => {
             const ry = clamp(snap(pos.y/S - p.h/2), 0, BH - p.h);
             const newRoom = { id:gid(), name:p.name, x:rx, y:ry, w:p.w, h:p.h, color:p.color, icon:p.icon };
             curRooms().push(newRoom);
-            selRoom = newRoom.id;
+            selRoom = newRoom.id; selFixed = null;
             pushHistory(); render(); updateProps();
         } else {
             deselectRoom();
@@ -561,7 +680,7 @@ function addCustomRoom() {
     const p = PRESETS[addType] || PRESETS.living;
     const newRoom = { id:gid(), name, x:0, y:0, w, h, color:p.color, icon:p.icon };
     curRooms().push(newRoom);
-    selRoom = newRoom.id;
+    selRoom = newRoom.id; selFixed = null;
     pushHistory(); render(); updateProps();
 }
 
@@ -573,16 +692,38 @@ function deleteRoom(id) {
 
 // ======================== PROPERTIES PANEL ========================
 function updateProps() {
-    const room = curRooms().find(r => r.id === selRoom);
-    if (!room) {
-        document.getElementById('propsContent').innerHTML = '<div style="font-size:10px;color:var(--text3);text-align:center;padding:8px 0">Select a room to edit</div>';
+    const propsEl = document.getElementById('propsContent');
+
+    if (selFixed) {
+        const ff = fixedFeatures.find(f => f.id === selFixed);
+        if (!ff) return;
+        propsEl.innerHTML = `
+            <div style="font-size:11px;font-weight:700;color:var(--warn);margin-bottom:8px">🏗️ Fixed Structure</div>
+            <div class="prop-field"><label>Structure Name</label><input class="prop-input" value="${ff.name}" onchange="setFixedProp('name',this.value)"></div>
+            <div class="prop-row-inline">
+                <div class="prop-field"><label>X Pos (ft)</label><input class="prop-input prop-input-sm" type="number" value="${ff.x}" min="0" max="${BW-ff.w}" onchange="setFixedProp('x',+this.value)"></div>
+                <div class="prop-field"><label>Y Pos (ft)</label><input class="prop-input prop-input-sm" type="number" value="${ff.y}" min="0" max="${BH-ff.h}" onchange="setFixedProp('y',+this.value)"></div>
+            </div>
+            <div class="prop-row-inline">
+                <div class="prop-field"><label>Width (ft)</label><input class="prop-input prop-input-sm" type="number" value="${ff.w}" min="1" max="${BW-ff.x}" onchange="setFixedProp('w',+this.value)"></div>
+                <div class="prop-field"><label>Height (ft)</label><input class="prop-input prop-input-sm" type="number" value="${ff.h}" min="1" max="${BH-ff.y}" onchange="setFixedProp('h',+this.value)"></div>
+            </div>
+            <button class="palette-item" onclick="deleteFixedStructure('${ff.id}')" style="justify-content:center;background:var(--danger);color:white;margin-top:6px">🗑️ Delete Fixed Structure</button>
+        `;
         return;
     }
-    const html = `
-        <div class="prop-field">
-            <label>Room Name</label>
-            <input class="prop-input" value="${room.name}" onchange="setProp('name',this.value)">
-        </div>
+
+    const room = curRooms().find(r => r.id === selRoom);
+    if (!room) {
+        propsEl.innerHTML = `
+            <div style="font-size:10px;color:var(--text3);text-align:center;padding:8px 0">Select a room or fixed structure to edit</div>
+            <button class="palette-item" onclick="deleteCurrentFloor()" style="justify-content:center;background:rgba(239,68,68,0.15);color:var(--danger);margin-top:10px">🗑️ Delete Active Floor</button>
+        `;
+        return;
+    }
+
+    propsEl.innerHTML = `
+        <div class="prop-field"><label>Room Name</label><input class="prop-input" value="${room.name}" onchange="setProp('name',this.value)"></div>
         <div class="prop-row-inline">
             <div class="prop-field"><label>X Pos (ft)</label><input class="prop-input prop-input-sm" type="number" value="${room.x}" min="0" max="${BW-room.w}" onchange="setProp('x',+this.value)"></div>
             <div class="prop-field"><label>Y Pos (ft)</label><input class="prop-input prop-input-sm" type="number" value="${room.y}" min="0" max="${BH-room.h}" onchange="setProp('y',+this.value)"></div>
@@ -600,7 +741,18 @@ function updateProps() {
             <div class="color-grid">${ROOM_COLORS.map(c=>`<button class="color-swatch${c===room.color?' active':''}" style="background:${c}" onclick="setProp('color','${c}')"></button>`).join('')}</div>
         </div>
     `;
-    document.getElementById('propsContent').innerHTML = html;
+}
+
+function setFixedProp(key, val) {
+    const ff = fixedFeatures.find(f => f.id === selFixed);
+    if (!ff) return;
+    if (key==='x') val = clamp(val, 0, BW-ff.w);
+    if (key==='y') val = clamp(val, 0, BH-ff.h);
+    if (key==='w') val = clamp(val, 1, BW-ff.x);
+    if (key==='h') val = clamp(val, 1, BH-ff.y);
+    ff[key] = val;
+    pushHistory(); render(); updateProps();
+    if (is3DMode) build3DScene();
 }
 
 function setProp(key, val) {
@@ -611,9 +763,7 @@ function setProp(key, val) {
     if (key==='w') val = clamp(val, 2, BW-room.x);
     if (key==='h') val = clamp(val, 2, BH-room.y);
     room[key] = val;
-    pushHistory();
-    render();
-    updateProps();
+    pushHistory(); render(); updateProps();
 }
 
 function setAreaProp(targetArea) {
@@ -636,11 +786,10 @@ function setAddType(type) {
     document.querySelectorAll('.palette-item').forEach(b => b.classList.toggle('active', b.dataset.type===type));
 }
 
-// ======================== FLOOR & HISTORY MANAGEMENT ========================
 function setFloor(f) {
     curFloor = f;
     deselectRoom();
-    document.querySelectorAll('.floor-btn').forEach(b => b.classList.toggle('active', b.dataset.floor===f));
+    renderFloorTabs();
     render();
     if (is3DMode) {
         const sel = document.getElementById('select3DFloor');
@@ -650,25 +799,39 @@ function setFloor(f) {
 }
 
 function resetFloor() {
-    if (!confirm('Reset this floor to default layout?')) return;
-    const def = makeFloors();
-    floors[curFloor] = def[curFloor];
+    if (!confirm('Reset current floor rooms to initial defaults?')) return;
+    const def = makeInitialFloors();
+    floors[curFloor] = def[curFloor] || [];
     pushHistory(); deselectRoom(); render();
 }
 
 function pushHistory() {
     history = history.slice(0, histIdx + 1);
-    history.push(JSON.parse(JSON.stringify(floors)));
+    history.push(JSON.parse(JSON.stringify({ floors, fixedFeatures, plot })));
     histIdx = history.length - 1;
     updateHistBtns();
 }
 
 function undo() {
-    if(histIdx>0){histIdx--;floors=JSON.parse(JSON.stringify(history[histIdx]));deselectRoom();render();updateHistBtns();}
+    if(histIdx>0){
+        histIdx--;
+        const state = JSON.parse(JSON.stringify(history[histIdx]));
+        floors = state.floors; fixedFeatures = state.fixedFeatures || fixedFeatures; plot = state.plot || plot;
+        BW = plot.w; BH = plot.h; SVG_W = BW * S + PAD * 2; SVG_H = BH * S + PAD * 2;
+        deselectRoom(); renderFloorTabs(); render(); updateHistBtns();
+        if(is3DMode) build3DScene();
+    }
 }
 
 function redo() {
-    if(histIdx<history.length-1){histIdx++;floors=JSON.parse(JSON.stringify(history[histIdx]));deselectRoom();render();updateHistBtns();}
+    if(histIdx<history.length-1){
+        histIdx++;
+        const state = JSON.parse(JSON.stringify(history[histIdx]));
+        floors = state.floors; fixedFeatures = state.fixedFeatures || fixedFeatures; plot = state.plot || plot;
+        BW = plot.w; BH = plot.h; SVG_W = BW * S + PAD * 2; SVG_H = BH * S + PAD * 2;
+        deselectRoom(); renderFloorTabs(); render(); updateHistBtns();
+        if(is3DMode) build3DScene();
+    }
 }
 
 function updateHistBtns() {
@@ -704,15 +867,7 @@ function exportPNG() {
 
 // ======================== INIT UI ========================
 function initUI() {
-    const tabsEl = document.getElementById('floorTabs');
-    [{id:'ground',l:'Ground'},{id:'first',l:'1st Floor'},{id:'second',l:'2nd Floor'},{id:'third',l:'3rd Floor'}].forEach(f => {
-        const btn = document.createElement('button');
-        btn.className = 'floor-btn' + (f.id===curFloor?' active':'');
-        btn.dataset.floor = f.id;
-        btn.textContent = f.l;
-        btn.onclick = () => setFloor(f.id);
-        tabsEl.appendChild(btn);
-    });
+    renderFloorTabs();
 
     const toolGrid = document.getElementById('toolGrid');
     TOOLS.forEach(t => {
@@ -732,6 +887,21 @@ function initUI() {
         btn.innerHTML = `<span class="palette-icon">${p.icon}</span><span>${p.name}</span><span class="palette-color" style="background:${p.color}"></span>`;
         btn.onclick = () => setAddType(key);
         palEl.appendChild(btn);
+    });
+
+    const fixedPal = document.getElementById('fixedPresetsList');
+    Object.entries(FIXED_PRESETS).forEach(([key, p]) => {
+        const btn = document.createElement('button');
+        btn.className = 'palette-item';
+        btn.innerHTML = `<span class="palette-icon">${p.icon}</span><span>${p.name}</span>`;
+        btn.onclick = () => {
+            const newFixed = { id:gid(), name:p.name, x:0, y:0, w:p.w, h:p.h, color:p.color, icon:p.icon, desc:'Fixed Structure' };
+            fixedFeatures.push(newFixed);
+            selFixed = newFixed.id; selRoom = null;
+            pushHistory(); render(); updateProps();
+            if(is3DMode) build3DScene();
+        };
+        fixedPal.appendChild(btn);
     });
 
     const layersEl = document.getElementById('layersList');
@@ -757,28 +927,6 @@ let targetExplode = 0;
 let scene3D, camera3D, renderer3D, controls3D, animReq3D;
 let floor3DGroups = {};
 let view3DFloor = 'all';
-
-const PLUMBING_PIPES = { 
-    lines: [
-        [[24, 20], [1, 14]],
-        [[1, 14], [3, 5]],
-        [[1, 14], [12, 20]],
-    ] 
-};
-const DRAINAGE_PIPES = { 
-    lines: [
-        [[3, 5], [1, 14]],
-        [[12, 20], [1, 14]],
-        [[1, 14], [4.5, 14]],
-    ] 
-};
-const ELECTRICAL_WIRING = { 
-    lines: [
-        [[27, 21.5], [12, 22]],
-        [[12, 22], [12, 20]],
-        [[12, 22], [5, 5]],
-    ] 
-};
 
 function set3DFloorView(val) {
     view3DFloor = val;
@@ -838,7 +986,7 @@ function init3DEngine() {
     scene3D.fog = new THREE.FogExp2(0x0a0f1a, 0.008);
 
     camera3D = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
-    camera3D.position.set(40, 50, 60);
+    camera3D.position.set(BW * 1.5, 50, BH * 2);
 
     renderer3D = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer3D.setSize(width, height);
@@ -862,7 +1010,7 @@ function init3DEngine() {
     scene3D.add(dirLight);
 
     const pointLight = new THREE.PointLight(0x818cf8, 1.2, 100);
-    pointLight.position.set(13.5, 30, 11.5);
+    pointLight.position.set(BW / 2, 30, BH / 2);
     scene3D.add(pointLight);
 
     window.addEventListener('resize', resize3D);
@@ -872,22 +1020,23 @@ function build3DScene() {
     Object.values(floor3DGroups).forEach(g => scene3D.remove(g));
     floor3DGroups = {};
 
-    const groundGeo = new THREE.PlaneGeometry(60, 60);
+    // Dynamic Base Ground Plane
+    const groundGeo = new THREE.PlaneGeometry(BW * 2, BH * 2);
     const groundMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.8 });
     const groundMesh = new THREE.Mesh(groundGeo, groundMat);
     groundMesh.rotation.x = -Math.PI / 2;
-    groundMesh.position.set(13.5, -0.1, 11.5);
+    groundMesh.position.set(BW / 2, -0.1, BH / 2);
     groundMesh.receiveShadow = true;
     scene3D.add(groundMesh);
 
-    const floorKeys = ['ground', 'first', 'second', 'third'];
-    const floorHeights = { ground: 0, first: 10, second: 20, third: 30 };
-
-    floorKeys.forEach(fKey => {
+    floorConfig.forEach((fConf, idx) => {
+        const fKey = fConf.id;
         const fGroup = new THREE.Group();
-        fGroup.position.y = (view3DFloor === 'all' ? floorHeights[fKey] : 0);
+        const baseHeight = idx * 10;
+        fGroup.position.y = (view3DFloor === 'all' ? baseHeight : 0);
         fGroup.visible = (view3DFloor === 'all' || view3DFloor === fKey);
 
+        // Dynamic Floor Slab
         const slabGeo = new THREE.BoxGeometry(BW, 0.4, BH);
         const slabMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.5 });
         const slabMesh = new THREE.Mesh(slabGeo, slabMat);
@@ -895,6 +1044,7 @@ function build3DScene() {
         slabMesh.receiveShadow = true;
         fGroup.add(slabMesh);
 
+        // Rooms
         (floors[fKey] || []).forEach(r => {
             const tileGeo = new THREE.BoxGeometry(r.w - 0.1, 0.1, r.h - 0.1);
             const tileMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(r.color || '#4338ca'), roughness: 0.4 });
@@ -906,28 +1056,14 @@ function build3DScene() {
             create3DRoomWalls(fGroup, r.x, r.y, r.w, r.h, wallHeight3D);
         });
 
-        create3DShaftColumn(fGroup, 0, 10, 2, 8, wallHeight3D, '#0284c7');
-        create3DShaftColumn(fGroup, 10, 21, 4, 2, wallHeight3D, '#fbbf24');
-
-        if (fKey === 'ground') {
-            const septicGeo = new THREE.BoxGeometry(5, 4, 8);
-            const septicMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, opacity: 0.8, transparent: true });
-            const septicMesh = new THREE.Mesh(septicGeo, septicMat);
-            septicMesh.position.set(4.5, 2, 14);
-            fGroup.add(septicMesh);
-
-            const boreGeo = new THREE.CylinderGeometry(2, 2, 6, 16);
-            const boreMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.5, roughness: 0.2 });
-            const boreMesh = new THREE.Mesh(boreGeo, boreMat);
-            boreMesh.position.set(24, 3, 20);
-            fGroup.add(boreMesh);
-        }
-
-        create3DStairs(fGroup, 0, 10, 6, 7);
-
-        if (layers.plumbing && typeof PLUMBING_PIPES !== 'undefined') create3DPipes(fGroup, PLUMBING_PIPES.lines, 0x60a5fa, 0.2);
-        if (layers.drainage && typeof DRAINAGE_PIPES !== 'undefined') create3DPipes(fGroup, DRAINAGE_PIPES.lines, 0x0284c7, 0.25);
-        if (layers.electrical && typeof ELECTRICAL_WIRING !== 'undefined') create3DPipes(fGroup, ELECTRICAL_WIRING.lines, 0xfbbf24, 0.15);
+        // Mutable Fixed Features rendered in 3D
+        fixedFeatures.forEach(ff => {
+            if (ff.id.includes('stairs')) {
+                create3DStairs(fGroup, ff.x, ff.y, ff.w, ff.h);
+            } else {
+                create3DShaftColumn(fGroup, ff.x, ff.y, ff.w, ff.h, wallHeight3D, ff.color || '#0284c7');
+            }
+        });
 
         scene3D.add(fGroup);
         floor3DGroups[fKey] = fGroup;
@@ -977,40 +1113,20 @@ function create3DStairs(group, x, y, w, h) {
     }
 }
 
-function create3DPipes(group, lines, colorHex, radius) {
-    const mat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.3, roughness: 0.2, metalness: 0.8 });
-    lines.forEach(pts => {
-        for (let i = 0; i < pts.length - 1; i++) {
-            const p1 = new THREE.Vector3(pts[i][0], 1, pts[i][1]);
-            const p2 = new THREE.Vector3(pts[i + 1][0], 1, pts[i + 1][1]);
-            const dist = p1.distanceTo(p2);
-            if (dist > 0.1) {
-                const geo = new THREE.CylinderGeometry(radius, radius, dist, 8);
-                const mesh = new THREE.Mesh(geo, mat);
-                const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
-                mesh.position.copy(mid);
-                const dir = new THREE.Vector3().subVectors(p2, p1).normalize();
-                mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
-                group.add(mesh);
-            }
-        }
-    });
-}
-
 function animate3D() {
     animReq3D = requestAnimationFrame(animate3D);
     explodeAmount += (targetExplode - explodeAmount) * 0.1;
-    const heights = { ground: 0, first: 10, second: 20, third: 30 };
 
-    Object.entries(floor3DGroups).forEach(([fKey, grp]) => {
+    floorConfig.forEach((fConf, idx) => {
+        const grp = floor3DGroups[fConf.id];
         if (!grp) return;
-        const mult = fKey === 'ground' ? 0 : fKey === 'first' ? 1 : fKey === 'second' ? 2 : 3;
+        const baseHeight = idx * 10;
         if (view3DFloor === 'all') {
-            grp.position.y = heights[fKey] + mult * explodeAmount * 15;
+            grp.position.y = baseHeight + idx * explodeAmount * 15;
             grp.visible = true;
         } else {
             grp.position.y = 0;
-            grp.visible = (fKey === view3DFloor);
+            grp.visible = (fConf.id === view3DFloor);
         }
     });
 
@@ -1034,11 +1150,6 @@ function toggle3DExplode() {
 function toggle3DAutoRotate() {
     isAutoRotate = !isAutoRotate;
     document.getElementById('btnRotate').textContent = isAutoRotate ? '⏸️ Pause' : '🔄 Rotate';
-}
-
-function update3DWallHeight(val) {
-    wallHeight3D = parseFloat(val);
-    if (is3DMode) build3DScene();
 }
 
 // Start Application
