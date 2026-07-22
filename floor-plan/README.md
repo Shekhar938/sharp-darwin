@@ -15,14 +15,14 @@ Since the application has zero network dependencies and all libraries (Three.js 
 
 1. Open **Windows File Explorer** and navigate to:
    ```text
-   C:\Users\shkr9\Documents\antigravity\sharp-darwin\floor-plan\
+  repo\sharp-darwin\floor-plan\
    ```
 2. Double-click on **`index.html`**.
 3. It will instantly open in your default browser (Chrome, Edge, Firefox, or Safari) with full 2D interactive editing and 3D WebGL capabilities.
 
 **Or via Windows PowerShell**:
 ```powershell
-Start-Process "C:\Users\shkr9\Documents\antigravity\sharp-darwin\floor-plan\index.html"
+Start-Process "repo\sharp-darwin\floor-plan\index.html"
 ```
 
 ---
