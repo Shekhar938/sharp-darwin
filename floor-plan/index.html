@@ -1205,9 +1205,12 @@
         <div class="header-center" id="floorTabs"></div>
         <div class="header-actions">
             <button class="floor-btn" onclick="openAddFloorModal()" style="background:var(--surface2);color:var(--accent2)">➕ Floor</button>
+            <button class="floor-btn" onclick="exportProjectJSON()" style="background:#16a34a;color:white" title="Save Backup JSON File to Computer">💾 Save File</button>
+            <button class="floor-btn" onclick="document.getElementById('fileInputJSON').click()" style="background:#2563eb;color:white" title="Open Saved JSON File">📂 Load File</button>
+            <input type="file" id="fileInputJSON" accept=".json" style="display:none" onchange="importProjectJSON(event)"/>
             <button class="act-btn" id="btnUndo" onclick="undo()" title="Undo">↩️</button>
             <button class="act-btn" id="btnRedo" onclick="redo()" title="Redo">↪️</button>
-            <button class="act-btn" onclick="exportPNG()" title="Export PNG">📷</button>
+            <button class="act-btn" onclick="exportPNG()" title="Export PNG Image">📷</button>
             <a href="mep_blueprint.html" class="floor-btn" style="background:#0284c7;color:white;text-decoration:none;margin-left:2px">📐 MEP Blueprint</a>
             <button class="floor-btn" id="btn3DMode" onclick="toggle3DMode()" style="background:var(--accent);color:white;margin-left:2px">🎲 3D</button>
         </div>
@@ -1392,9 +1395,21 @@ let floorFixed = {
         { id:'septic',    name:'Septic Tank',   x:10, y:2,  w:8,  h:6, color:'#334155', label:'Septic Tank (8\'×6\')', icon:'🛢️', desc:'Top Wall Tank' },
         { id:'stairs',    name:'Staircase',     x:0,  y:10, w:12, h:7, color:'#334155', label:'Staircase (12\'×7\')', icon:'🪜', desc:'Left Wall Stairs' },
         { id:'shaft2',    name:'North Shaft 2', x:25, y:11, w:2,  h:4, color:'#a16207', label:'North Shaft 2 (2\'×4\')', icon:'⚡', desc:'Right Wall Shaft' },
-        { id:'watertank', name:'Overhead Tank', x:22, y:18, w:5,  h:5, color:'#1d4ed8', label:'Overhead Tank (5\'×5\')', icon:'🚰', desc:'Bottom-Right Tank' }
+        { id:'watertank', name:'Overhead Tank', x:22, y:18, w:5,  h:5, color:'#1d4ed8', label:'Overhead Tank (5\'×5\')', icon:'🚰', desc:'Bottom-Right Tank' },
+        { id:'mainDoor',  isDoor:true, type:'door', name:'Main Double Door', x:11, y:23, w:5, h:0.6, color:'#d97706', icon:'🚪' },
+        { id:'bed2Door',  isDoor:true, type:'door', name:'Bedroom 2 Door',  x:10, y:7,  w:3, h:0.6, color:'#eab308', icon:'🚪' },
+        { id:'bath1Door', isDoor:true, type:'door', name:'Bathroom Door',   x:10, y:4,  w:2.5,h:0.6, color:'#f59e0b', icon:'🚪' },
+        { id:'win1',      isWin:true,  type:'window',name:'Bedroom Window', x:0,  y:4,  w:4, h:0.6, color:'#0284c7', icon:'🪟' },
+        { id:'win2',      isWin:true,  type:'window',name:'Master Window',  x:27, y:4,  w:4, h:0.6, color:'#0284c7', icon:'🪟' }
     ],
-    first: [], second: [], third: []
+    first: [
+        { id:'mainDoor_f1', isDoor:true, type:'door', name:'1st Floor Entry Door', x:11, y:23, w:5, h:0.6, color:'#d97706', icon:'🚪' },
+        { id:'bed2Door_f1', isDoor:true, type:'door', name:'Bedroom 2 Door',       x:10, y:7,  w:3, h:0.6, color:'#eab308', icon:'🚪' },
+        { id:'bath1Door_f1',isDoor:true, type:'door', name:'Bathroom Door',        x:10, y:4,  w:2.5,h:0.6, color:'#f59e0b', icon:'🚪' },
+        { id:'win1_f1',     isWin:true,  type:'window',name:'Bedroom Window',      x:0,  y:4,  w:4, h:0.6, color:'#0284c7', icon:'🪟' },
+        { id:'win2_f1',     isWin:true,  type:'window',name:'Master Window',       x:27, y:4,  w:4, h:0.6, color:'#0284c7', icon:'🪟' }
+    ],
+    second: [], third: []
 };
 // Legacy alias — always points to current floor's fixed features (used by helpers below)
 let fixedFeatures = [];
@@ -2524,6 +2539,59 @@ function exportPNG() {
         a.click();
     };
     img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+}
+
+function exportProjectJSON() {
+    const data = {
+        appName: "FloorPlanDesigner",
+        version: "3.0",
+        timestamp: new Date().toISOString(),
+        plot,
+        floorConfig,
+        floors,
+        floorFixed,
+        floorWalls
+    };
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    a.download = `my-floor-plan-backup-${dateStr}.json`;
+    a.href = url;
+    a.click();
+    URL.revokeObjectURL(url);
+    alert('✅ Project layout saved successfully as JSON backup file to your computer!');
+}
+
+function importProjectJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.plot) plot = data.plot;
+            if (data.floorConfig) floorConfig = data.floorConfig;
+            if (data.floors) floors = data.floors;
+            if (data.floorFixed) floorFixed = data.floorFixed;
+            if (data.floorWalls) floorWalls = data.floorWalls;
+
+            BW = plot.w; BH = plot.h;
+            SVG_W = BW * S + PAD_LEFT + PAD_RIGHT; SVG_H = BH * S + PAD_TOP + PAD_BOTTOM;
+            curFloor = floorConfig[0] ? floorConfig[0].id : 'ground';
+
+            saveData();
+            renderFloorTabs();
+            render();
+            if (is3DMode) build3DScene();
+            alert('🎉 Project layout restored successfully from your backup file!');
+        } catch (err) {
+            alert('❌ Failed to read project JSON file: ' + err.message);
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
 }
 
 // ======================== INIT UI ========================
