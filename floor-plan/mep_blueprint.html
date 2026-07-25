@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architectural MEP Blueprint Viewer</title>
+    <style>
+        :root {
+            --bg: #0b132b;
+            --panel: #1c2541;
+            --accent: #3a506b;
+            --cyan: #48cae4;
+            --yellow: #ffd166;
+            --red: #ef476f;
+            --green: #06d6a0;
+            --text: #edf2f4;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        header { background: #070d1e; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; }
+        h1 { font-size: 18px; font-weight: 700; color: var(--cyan); display: flex; align-items: center; gap: 10px; }
+        .btn { background: var(--accent); color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn:hover { background: #5bc0be; color: #0b132b; }
+        .main-container { flex: 1; display: flex; position: relative; }
+        aside { width: 300px; background: var(--panel); border-right: 1px solid #1e293b; padding: 16px; display: flex; flex-direction: column; gap: 16px; z-index: 10; }
+        .panel-box { background: #0f172a; padding: 14px; border-radius: 8px; border: 1px solid #334155; }
+        .panel-title { font-size: 12px; text-transform: uppercase; font-weight: 700; color: #94a3b8; margin-bottom: 10px; letter-spacing: 0.5px; }
+        .layer-toggle { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1e293b; font-size: 13px; }
+        .toggle-switch { position: relative; width: 38px; height: 20px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0; background-color: #334155; transition: .3s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--cyan); }
+        input:checked + .slider:before { transform: translateX(18px); }
+        .canvas-area { flex: 1; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #152238 0%, #0b132b 100%); position: relative; }
+        svg { background: #070d1d; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #1e293b; }
+        .legend-list { font-size: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .legend-item { display: flex; align-items: center; gap: 10px; }
+        .legend-color { width: 16px; height: 4px; border-radius: 2px; }
+        .tab-btn { background: #0f172a; border: 1px solid #334155; color: #94a3b8; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .tab-btn.active { background: var(--cyan); color: #0b132b; border-color: var(--cyan); }
+        .modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); display:none; justify-content:center; align-items:center; z-index:100; }
+        .modal { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 24px; max-width: 650px; width:90%; color: var(--text); }
+        table { width:100%; border-collapse:collapse; margin-top:12px; font-size:12px; }
+        th, td { padding: 8px 12px; text-anchor:left; border-bottom: 1px solid #1e293b; }
+        th { background: #1e293b; color: var(--cyan); text-align: left; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📐 MEP Architectural Engineering Blueprint</h1>
+        <div style="display:flex; gap:10px;">
+            <button class="btn" onclick="openSpecModal()">📋 Pipe & Conduit Schedule</button>
+            <button class="btn" onclick="window.close()">✖️ Close</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside>
+            <div class="panel-box">
+                <div class="panel-title">Active Floor Level</div>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;" id="floorBtns">
+                    <button class="tab-btn" onclick="setFloor('first')">1st Floor</button>
+                    <button class="tab-btn active" onclick="setFloor('second')">2nd Floor</button>
+                    <button class="tab-btn" onclick="setFloor('third')">3rd Floor</button>
+                    <button class="tab-btn" onclick="setFloor('ground')">Ground</button>
+                </div>
+            </div>
+
+            <div class="panel-box">
+                <div class="panel-title">Architectural MEP Layers</div>
+                <div class="layer-toggle">
+                    <span>🚪 Doors & Windows</span>
+                    <label class="toggle-switch"><input type="checkbox" id="chkDoors" checked onchange="draw()"><span class="slider"></span></label>
+                </div>
+                <div class="layer-toggle">
+                    <span>💧 Water Supply (25mm CPVC)</span>
+                    <label class="toggle-switch"><input type="checkbox" id="chkPlumb" onchange="draw()"><span class="slider"></span></label>
+                </div>
+                <div class="layer-toggle">
+                    <span>🛢️ Soil Sewage (110mm PVC)</span>
+                    <label class="toggle-switch"><input type="checkbox" id="chkSoil" onchange="draw()"><span class="slider"></span></label>
+                </div>
+                <div class="layer-toggle">
+                    <span>🚿 Greywater (75mm PVC)</span>
+                    <label class="toggle-switch"><input type="checkbox" id="chkGrey" onchange="draw()"><span class="slider"></span></label>
+                </div>
+                <div class="layer-toggle">
+                    <span>⚡ Power Electrical (3-Phase)</span>
+                    <label class="toggle-switch"><input type="checkbox" id="chkElec" onchange="draw()"><span class="slider"></span></label>
+                </div>
+            </div>
+
+            <div class="panel-box">
+                <div class="panel-title">Master Shaft Segregation</div>
+                <div class="legend-list">
+                    <div class="legend-item"><div class="legend-color" style="background:#f59e0b;"></div><span><b>Doors</b>: Single, Double & Sliding</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background:#38bdf8;"></div><span><b>Windows</b>: Standard & Ventilators</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background:#4a3b52;"></div><span><b>West Shaft 1</b>: Top Wall (8'×2')</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background:#b45309;"></div><span><b>North Shaft 2</b>: Right Wall (2'×4')</span></div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="canvas-area">
+            <svg id="cadSvg" width="700" height="600" viewBox="0 0 700 600"></svg>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="specModal">
+        <div class="modal">
+            <h2 style="color:var(--cyan); font-size:18px;">Engineering Pipe & Conduit Schedule</h2>
+            <table>
+                <thead>
+                    <tr><th>System</th><th>Conduit / Pipe Material</th><th>Standard Size</th><th>Riser Location</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Cold Water Header</td><td>Schedule 80 CPVC Pipe</td><td>25mm (1 inch)</td><td>Terrace Tank (5'x5') to Shaft 1 & Shaft 2</td></tr>
+                    <tr><td>Soil Blackwater</td><td>Heavy Duty SWR PVC Pipe</td><td>110mm (4.5 inch)</td><td>West Shaft 1 (Top Wall 8'x2') to Septic (8'x6')</td></tr>
+                    <tr><td>Bathroom Greywater</td><td>Standard Waste PVC Pipe</td><td>75mm (3 inch)</td><td>West Shaft 1 (Top Wall Riser)</td></tr>
+                    <tr><td>Kitchen/Dining Waste</td><td>Grease Trap Waste PVC Pipe</td><td>75mm (3 inch)</td><td>North Shaft 2 (Right Wall 2'x4')</td></tr>
+                    <tr><td>Primary Power Riser</td><td>Armored 4-Core Copper Cable</td><td>35 sq mm 3-Phase</td><td>North Shaft 2 (Right Wall Dry Stack)</td></tr>
+                </tbody>
+            </table>
+            <button class="btn" style="margin-top:16px;" onclick="closeSpecModal()">Close Specification</button>
+        </div>
+    </div>
+
+    <script>
+        let curFloor = 'second';
+        const S = 20, PAD = 40, BW = 27, BH = 23;
+
+        const customUserLayout = [
+            { name:'Bedroom 2', x:0, y:0, w:10, h:10, color:'#312e81' },
+            { name:'Bathroom', x:9.5, y:3, w:8, h:5, color:'#0e7490' },
+            { name:'Bedroom 3', x:18, y:0, w:9, h:10, color:'#312e81' },
+            { name:'Kitchen', x:0, y:17, w:9, h:6, color:'#78350f' },
+            { name:'Dining Area', x:9, y:17, w:8, h:6, color:'#881337' },
+            { name:'Bathroom', x:19, y:10, w:6, h:4, color:'#0e7490' },
+            { name:'Bedroom', x:17, y:14, w:10, h:9, color:'#312e81' }
+        ];
+
+        let floors = {
+            first: [
+                { name:'Master Bedroom', x:0, y:0, w:10, h:10, color:'#1e1b4b' },
+                { name:'Living Room', x:10, y:0, w:8, h:10, color:'#064e3b' },
+                { name:'Kitchen Area', x:6, y:17, w:12, h:6, color:'#78350f' },
+                { name:'Bathroom / Toilet', x:0, y:17, w:6, h:6, color:'#0e7490' },
+                { name:'Dining Hall', x:6, y:12, w:12, h:5, color:'#881337' }
+            ],
+            second: JSON.parse(JSON.stringify(customUserLayout)),
+            third: JSON.parse(JSON.stringify(customUserLayout)),
+            ground: [
+                { name:'Parking Bay', x:7, y:7, w:11, h:11, color:'#334155' },
+                { name:'Entrance Lobby', x:7, y:18, w:10, h:5, color:'#475569' },
+                { name:'Utility / Store', x:0, y:0, w:6, h:7, color:'#1f2937' },
+                { name:'North Bathroom', x:18, y:15, w:5, h:6, color:'#0e7490' }
+            ]
+        };
+
+        let fixedFeatures = [
+            { id:'shaft1', name:'West Shaft 1', x:9.5, y:0, w:8, h:2, color:'#4a3b52' },
+            { id:'septic', name:'Septic Tank', x:9.5, y:2, w:8, h:6, color:'#4a1c1c' },
+            { id:'stairs', name:'Staircase', x:0, y:10, w:12, h:7, color:'#334155' },
+            { id:'shaft2', name:'North Shaft 2', x:25, y:10, w:2, h:4, color:'#b45309' },
+            { id:'watertank', name:'Overhead Tank', x:22, y:18, w:5, h:5, color:'#0e7490' },
+            { id:'boring', name:'Borewell', x:22, y:18, w:5, h:5, color:'#0284c7' },
+            { id:'sikake', name:'Sikake (Soak Pit)', x:17.5, y:0, w:4, h:2, color:'#0284c7' },
+            // Doors & Windows
+            { id:'d_main', name:'Main Entrance Door', category:'door', x:12, y:22, w:4, h:1, color:'#f59e0b' },
+            { id:'d_bed2', name:'Bedroom 2 Door', category:'door', x:7, y:10, w:3, h:1, color:'#f59e0b' },
+            { id:'d_bed3', name:'Bedroom 3 Door', category:'door', x:18, y:10, w:3, h:1, color:'#f59e0b' },
+            { id:'d_bath1', name:'North Bathroom Door', category:'door', x:9.5, y:8, w:2.5, h:1, color:'#f59e0b' },
+            { id:'d_bath2', name:'East Bathroom Door', category:'door', x:19, y:14, w:2.5, h:1, color:'#f59e0b' },
+            { id:'w_bed2', name:'Bedroom 2 Window', category:'window', x:0, y:3, w:1, h:4, color:'#38bdf8' },
+            { id:'w_bed3', name:'Bedroom 3 Window', category:'window', x:26, y:3, w:1, h:4, color:'#38bdf8' },
+            { id:'w_kit', name:'Kitchen Window', category:'window', x:0, y:18, w:1, h:3, color:'#38bdf8' }
+        ];
+
+        function loadSavedLayout() {
+            try {
+                const saved = localStorage.getItem('vastu_floorplan_data');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data.floors) floors = data.floors;
+                    if (data.fixedFeatures) fixedFeatures = data.fixedFeatures;
+                }
+            } catch (e) { console.error('Error loading saved memory:', e); }
+        }
+        loadSavedLayout();
+
+        function setFloor(f) {
+            curFloor = f;
+            document.querySelectorAll('#floorBtns button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            draw();
+        }
+
+        function openSpecModal() { document.getElementById('specModal').style.display = 'flex'; }
+        function closeSpecModal() { document.getElementById('specModal').style.display = 'none'; }
+
+        function draw() {
+            const svg = document.getElementById('cadSvg');
+            let h = '';
+
+            // CAD Grid
+            h += `<defs><pattern id="cadGrid" width="${S}" height="${S}" patternUnits="userSpaceOnUse"><path d="M ${S} 0 L 0 0 0 ${S}" fill="none" stroke="#1e293b" stroke-width="0.8"/></pattern></defs>`;
+            h += `<rect width="700" height="600" fill="#070d1d"/>`;
+            h += `<rect x="${PAD}" y="${PAD}" width="${BW*S}" height="${BH*S}" fill="url(#cadGrid)" stroke="#334155" stroke-width="2"/>`;
+
+            const chkDoors = document.getElementById('chkDoors').checked;
+
+            // Render Fixed Features, Doors & Windows
+            fixedFeatures.forEach(ff => {
+                const isDoor = ff.category === 'door' || ff.name.toLowerCase().includes('door');
+                const isWindow = ff.category === 'window' || ff.name.toLowerCase().includes('window') || ff.name.toLowerCase().includes('ventilator');
+
+                if ((isDoor || isWindow) && !chkDoors) return;
+
+                const fx = PAD + ff.x*S, fy = PAD + ff.y*S, fw = ff.w*S, fh = ff.h*S;
+
+                if (isDoor) {
+                    const arcR = Math.max(fw, fh);
+                    h += `<g transform="translate(${fx},${fy})">
+                        <rect width="${fw}" height="${fh}" fill="#f59e0b" fill-opacity="0.4" stroke="#f59e0b" stroke-width="2" rx="2"/>
+                        <path d="M 0 ${fh} A ${arcR} ${arcR} 0 0 1 ${arcR} 0" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,2"/>
+                        <line x1="0" y1="${fh}" x2="0" y2="0" stroke="#f59e0b" stroke-width="3"/>
+                        <text x="${fw/2}" y="${fh/2 + 3}" text-anchor="middle" fill="#fef08a" font-size="8" font-weight="700">🚪 ${ff.name}</text>
+                    </g>`;
+                } else if (isWindow) {
+                    h += `<g transform="translate(${fx},${fy})">
+                        <rect width="${fw}" height="${fh}" fill="#0284c7" fill-opacity="0.4" stroke="#38bdf8" stroke-width="2" rx="2"/>
+                        <line x1="${fw/2}" y1="0" x2="${fw/2}" y2="${fh}" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3,2"/>
+                        <text x="${fw/2}" y="${fh/2 + 3}" text-anchor="middle" fill="#bae6fd" font-size="8" font-weight="700">🪟 ${ff.name}</text>
+                    </g>`;
+                } else {
+                    h += `<rect x="${fx}" y="${fy}" width="${fw}" height="${fh}" fill="${ff.color}" fill-opacity="0.25" stroke="${ff.color}" stroke-width="1.5" stroke-dasharray="3,3"/>
+                          <text x="${fx + fw/2}" y="${fy + fh/2}" text-anchor="middle" fill="#cbd5e1" font-size="9" font-weight="700">${ff.name}</text>`;
+                }
+            });
+
+            // Render Active Floor Rooms
+            (floors[curFloor] || []).forEach(r => {
+                const rx = PAD + r.x*S, ry = PAD + r.y*S, rw = r.w*S, rh = r.h*S;
+                h += `<g transform="translate(${rx},${ry})">
+                    <rect width="${rw}" height="${rh}" fill="${r.color}" fill-opacity="0.3" stroke="#475569" stroke-width="1.5"/>
+                    <text x="${rw/2}" y="${rh/2}" text-anchor="middle" fill="#cbd5e1" font-size="10" font-weight="700">${r.name}</text>
+                </g>`;
+            });
+
+            const soakPit = fixedFeatures.find(f => f.name.toLowerCase().includes('sikake') || f.name.toLowerCase().includes('soak')) || { x:17.5, y:0, w:4, h:2 };
+            const sx = soakPit.x + soakPit.w/2;
+            const sy = soakPit.y + soakPit.h/2;
+
+            const chkPlumb = document.getElementById('chkPlumb').checked;
+            const chkSoil = document.getElementById('chkSoil').checked;
+            const chkGrey = document.getElementById('chkGrey').checked;
+            const chkElec = document.getElementById('chkElec').checked;
+
+            if (chkPlumb) {
+                h += `<path d="M ${PAD+24.5*S} ${PAD+20.5*S} L ${PAD+26*S} ${PAD+20.5*S} L ${PAD+26*S} ${PAD+12*S} L ${PAD+26*S} ${PAD+1*S} L ${PAD+13.5*S} ${PAD+1*S}" fill="none" stroke="#0284c7" stroke-width="4"/>`;
+                (floors[curFloor] || []).forEach(r => {
+                    const rcx = r.x + r.w/2, rcy = r.y + r.h/2;
+                    const shaftX = Math.hypot(rcx - 13.5, rcy - 1) < Math.hypot(rcx - 26, rcy - 12) ? 13.5 : 26;
+                    const shaftY = shaftX === 13.5 ? 1 : 12;
+                    h += `<path d="M ${PAD+shaftX*S} ${PAD+shaftY*S} L ${PAD+shaftX*S} ${PAD+rcy*S} L ${PAD+rcx*S} ${PAD+rcy*S}" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4,3"/>`;
+                });
+            }
+
+            if (chkSoil) {
+                (floors[curFloor] || []).filter(r => r.name.toLowerCase().includes('bath') || r.name.toLowerCase().includes('toilet')).forEach(r => {
+                    const rcx = r.x + r.w/2, rcy = r.y + r.h/2;
+                    h += `<path d="M ${PAD+rcx*S} ${PAD+rcy*S} L ${PAD+13.5*S} ${PAD+rcy*S} L ${PAD+13.5*S} ${PAD+1*S} L ${PAD+13.5*S} ${PAD+5*S}" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="6,3"/>`;
+                });
+            }
+
+            if (chkGrey) {
+                (floors[curFloor] || []).forEach(r => {
+                    const rcx = r.x + r.w/2, rcy = r.y + r.h/2;
+                    const isBath = r.name.toLowerCase().includes('bath') || r.name.toLowerCase().includes('toilet');
+                    const isKitchenOrDining = r.name.toLowerCase().includes('kitchen') || r.name.toLowerCase().includes('dining');
+
+                    if (isBath) {
+                        h += `<path d="M ${PAD+rcx*S} ${PAD+rcy*S} L ${PAD+13.5*S} ${PAD+rcy*S} L ${PAD+13.5*S} ${PAD+1*S} L ${PAD+sx*S} ${PAD+1*S}" fill="none" stroke="#0284c7" stroke-width="3"/>`;
+                    } else if (isKitchenOrDining) {
+                        h += `<path d="M ${PAD+rcx*S} ${PAD+rcy*S} L ${PAD+26*S} ${PAD+rcy*S} L ${PAD+26*S} ${PAD+12*S} L ${PAD+26*S} ${PAD+1*S} L ${PAD+sx*S} ${PAD+1*S}" fill="none" stroke="#0369a1" stroke-width="3.5"/>`;
+                    } else {
+                        h += `<path d="M ${PAD+rcx*S} ${PAD+rcy*S} L ${PAD+26*S} ${PAD+rcy*S} L ${PAD+26*S} ${PAD+12*S} L ${PAD+26*S} ${PAD+1*S} L ${PAD+sx*S} ${PAD+1*S}" fill="none" stroke="#0284c7" stroke-width="3"/>`;
+                    }
+                });
+            }
+
+            if (chkElec) {
+                h += `<path d="M ${PAD+13.5*S} ${PAD+23*S} L ${PAD+2*S} ${PAD+23*S} L ${PAD+2*S} ${PAD+21*S}" fill="none" stroke="#f59e0b" stroke-width="3"/>`;
+                h += `<path d="M ${PAD+2*S} ${PAD+21*S} L ${PAD+26*S} ${PAD+21*S} L ${PAD+26*S} ${PAD+12*S}" fill="none" stroke="#eab308" stroke-width="4"/>`;
+                h += `<path d="M ${PAD+2*S} ${PAD+21*S} L ${PAD+13.5*S} ${PAD+21*S} L ${PAD+13.5*S} ${PAD+1*S}" fill="none" stroke="#eab308" stroke-width="4"/>`;
+                
+                const livingRoom = (floors[curFloor] || []).find(r => r.name.toLowerCase().includes('bedroom')) || { x: 17, y: 14, w: 10, h: 9 };
+                const dbx = livingRoom.x + Math.min(4, livingRoom.w/2);
+                const dby = livingRoom.y + Math.min(4, livingRoom.h/2);
+
+                h += `<path d="M ${PAD+26*S} ${PAD+12*S} L ${PAD+dbx*S} ${PAD+12*S} L ${PAD+dbx*S} ${PAD+dby*S}" fill="none" stroke="#facc15" stroke-width="3"/>`;
+
+                (floors[curFloor] || []).forEach(r => {
+                    const rcx = r.x + r.w/2, rcy = r.y + r.h/2;
+                    const startX = Math.hypot(rcx - 13.5, rcy - 1) < Math.hypot(rcx - dbx, rcy - dby) ? 13.5 : dbx;
+                    const startY = startX === 13.5 ? 1 : dby;
+                    h += `<path d="M ${PAD+startX*S} ${PAD+startY*S} L ${PAD+startX*S} ${PAD+rcy*S} L ${PAD+rcx*S} ${PAD+rcy*S}" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="5,3"/>`;
+                });
+            }
+
+            svg.innerHTML = h;
+        }
+
+        draw();
+    </script>
+</body>
+</html>
