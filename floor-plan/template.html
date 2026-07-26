@@ -161,6 +161,7 @@
             <button class="floor-btn" onclick="openAddFloorModal()" style="background:var(--surface2);color:var(--accent2)">➕ Floor</button>
             <button class="floor-btn" onclick="exportProjectJSON()" style="background:#16a34a;color:white" title="Save Backup JSON File to Computer">💾 Save File</button>
             <button class="floor-btn" onclick="document.getElementById('fileInputJSON').click()" style="background:#2563eb;color:white" title="Open Saved JSON File">📂 Load File</button>
+            <button class="floor-btn" onclick="exportGitDefaultJS()" style="background:#7c3aed;color:white" title="Export current layout as JavaScript code for Git commit">📤 Export to Git</button>
             <input type="file" id="fileInputJSON" accept=".json" style="display:none" onchange="importProjectJSON(event)"/>
             <button class="act-btn" id="btnUndo" onclick="undo()" title="Undo">↩️</button>
             <button class="act-btn" id="btnRedo" onclick="redo()" title="Redo">↪️</button>
@@ -1550,6 +1551,22 @@ function exportProjectJSON() {
     a.click();
     URL.revokeObjectURL(url);
     alert('✅ Project layout saved successfully as JSON backup file to your computer!');
+}
+
+function exportGitDefaultJS() {
+    const dataObj = { floors, plot, floorFixed, floorWalls, floorConfig };
+    const jsonStr = JSON.stringify(dataObj, null, 2);
+    const snippet = `/* COPY THIS OBJECT INTO template.html (makeInitialFloors) OR default_layout.json */\nconst GIT_DEFAULT_LAYOUT = ${jsonStr};`;
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(snippet).then(() => {
+            alert('📋 Current floor plan code copied to clipboard! You can paste it into default_layout.json or template.html and commit to Git!');
+        }).catch(() => {
+            prompt('Copy your Git Layout Code below:', snippet);
+        });
+    } else {
+        prompt('Copy your Git Layout Code below:', snippet);
+    }
 }
 
 function importProjectJSON(event) {
