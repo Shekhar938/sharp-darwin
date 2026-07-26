@@ -1066,24 +1066,28 @@
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
         :root {
-            --base: #1e1e2e;
-            --surface: #25253a;
-            --surface2: #2c2c44;
-            --shadow-dark: #16162a;
-            --shadow-light: #34344e;
-            --accent: #7c6ff5;
-            --accent2: #a29bfe;
-            --accent-glow: rgba(124, 111, 245, 0.25);
-            --success: #2ecc71;
-            --warn: #f1c40f;
-            --danger: #e74c3c;
-            --text: #e8e8f0;
-            --text2: #9898b0;
-            --text3: #5a5a70;
-            --neo-out: 6px 6px 14px var(--shadow-dark), -6px -6px 14px var(--shadow-light);
-            --neo-out-sm: 3px 3px 7px var(--shadow-dark), -3px -3px 7px var(--shadow-light);
-            --neo-in: inset 3px 3px 7px var(--shadow-dark), inset -3px -3px 7px var(--shadow-light);
-            --neo-in-sm: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light);
+            --base: #0b0f19;
+            --surface: #111827;
+            --surface2: #1f2937;
+            --shadow-dark: #070a12;
+            --shadow-light: #1e293b;
+            --accent: #6366f1;
+            --accent2: #8b5cf6;
+            --accent-glow: rgba(99, 102, 241, 0.35);
+            --cyan-accent: #06b6d4;
+            --emerald-accent: #10b981;
+            --rose-accent: #f43f5e;
+            --amber-accent: #f59e0b;
+            --success: #10b981;
+            --warn: #f59e0b;
+            --danger: #ef4444;
+            --text: #f9fafb;
+            --text2: #9ca3af;
+            --text3: #6b7280;
+            --neo-out: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+            --neo-out-sm: 0 4px 12px 0 rgba(0, 0, 0, 0.4);
+            --neo-in: inset 0 2px 4px 0 rgba(0, 0, 0, 0.6);
+            --neo-in-sm: inset 0 1px 2px 0 rgba(0, 0, 0, 0.5);
         }
         body { font-family: 'Inter', sans-serif; background: var(--base); color: var(--text); height: 100vh; overflow: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
         #app { display: flex; flex-direction: column; height: 100vh; position: relative; }
@@ -1108,8 +1112,9 @@
         .main { display: flex; flex: 1; overflow: hidden; position: relative; }
 
         /* ===== LEFT & RIGHT PANELS ===== */
-        .left-panel { width: 250px; padding: 10px; background: var(--base); display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.03); z-index: 10; transition: transform .3s ease; }
-        .right-panel { width: 260px; padding: 10px; background: var(--base); display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.03); z-index: 10; transition: transform .3s ease; }
+        .left-panel { width: 250px; padding: 10px; background: var(--base); display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.03); z-index: 10; transition: all .25s ease; }
+        .right-panel { width: 260px; padding: 10px; background: var(--base); display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.03); z-index: 10; transition: all .25s ease; }
+        .left-panel.collapsed, .right-panel.collapsed { width: 0 !important; min-width: 0 !important; padding: 0 !important; overflow: hidden !important; border: none !important; opacity: 0 !important; pointer-events: none !important; }
         .panel-card { background: var(--surface); border-radius: 14px; box-shadow: var(--neo-out); padding: 10px; }
         .panel-title { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); font-weight: 700; margin-bottom: 8px; }
         .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
@@ -1220,7 +1225,7 @@
         <aside class="left-panel" id="leftPanel">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
                 <span class="panel-title" style="margin:0">Plot & Tools</span>
-                <button onclick="toggleMobileDrawer('left')" style="border:none;background:none;color:var(--text2);font-size:16px;cursor:pointer">✕</button>
+                <button onclick="toggleSidebar('left')" title="Close Plot & Tools Sidebar" style="border:none;background:none;color:var(--text2);font-size:16px;cursor:pointer;padding:2px 6px">✕</button>
             </div>
 
             <!-- Plot Dimensions Customizer Card -->
@@ -1282,6 +1287,13 @@
         </aside>
 
         <div class="canvas-wrap">
+            <!-- Floating Re-open Sidebar Buttons -->
+            <button id="btnShowLeft" onclick="toggleSidebar('left')" title="Open Plot & Tools Sidebar" style="display:none;position:absolute;top:16px;left:16px;background:rgba(15,23,42,0.85);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);color:white;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;z-index:25;box-shadow:0 4px 12px rgba(0,0,0,0.4)">
+                📂 Plot & Tools
+            </button>
+            <button id="btnShowRight" onclick="toggleSidebar('right')" title="Open Structures & Layers Sidebar" style="display:none;position:absolute;top:16px;right:16px;background:rgba(15,23,42,0.85);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);color:white;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;z-index:25;box-shadow:0 4px 12px rgba(0,0,0,0.4)">
+                ⚙️ Structures & Layers
+            </button>
             <div class="canvas-inner" id="canvas2DWrap" onmousedown="startPanOrDraw(event)">
                 <svg id="canvas" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"></svg>
                 <!-- Floating On-Canvas 2D Zoom Control -->
@@ -1306,7 +1318,7 @@
         <aside class="right-panel" id="rightPanel">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
                 <span class="panel-title" style="margin:0">Structures & Layers</span>
-                <button onclick="toggleMobileDrawer('right')" style="border:none;background:none;color:var(--text2);font-size:16px;cursor:pointer">✕</button>
+                <button onclick="toggleSidebar('right')" title="Close Structures & Layers Sidebar" style="border:none;background:none;color:var(--text2);font-size:16px;cursor:pointer;padding:2px 6px">✕</button>
             </div>
 
             <!-- Doors & Windows Section -->
@@ -1426,15 +1438,15 @@ const FIXED_PRESETS = {
 };
 
 const PRESETS = {
-    living:   { name:'Living Room',   w:12, h:10, color:'#166534', icon:'🛋️' },
+    living:   { name:'Living Room',   w:12, h:10, color:'#047857', icon:'🛋️' },
     bedroom:  { name:'Bedroom',       w:10, h:9,  color:'#4338ca', icon:'🛏️' },
-    kitchen:  { name:'Kitchen',       w:9,  h:7,  color:'#b45309', icon:'🍳' },
-    bathroom: { name:'Bathroom',      w:5,  h:5,  color:'#0e7490', icon:'🚿' },
-    dining:   { name:'Dining Area',   w:5,  h:6,  color:'#9f1239', icon:'🍽️' },
-    balcony:  { name:'Balcony',       w:10, h:4,  color:'#14532d', icon:'🌿' },
-    pooja:    { name:'Pooja Room',    w:4,  h:4,  color:'#a16207', icon:'🪔' },
-    passage:  { name:'Passage',       w:4,  h:6,  color:'#1e293b', icon:'🚶' },
-    utility:  { name:'Utility',       w:4,  h:4,  color:'#78350f', icon:'🔧' },
+    kitchen:  { name:'Kitchen',       w:9,  h:7,  color:'#d97706', icon:'🍳' },
+    bathroom: { name:'Bathroom',      w:5,  h:5,  color:'#0284c7', icon:'🚿' },
+    dining:   { name:'Dining Area',   w:5,  h:6,  color:'#be185d', icon:'🍽️' },
+    balcony:  { name:'Balcony',       w:10, h:4,  color:'#059669', icon:'🌿' },
+    pooja:    { name:'Pooja Room',    w:4,  h:4,  color:'#b45309', icon:'🪔' },
+    passage:  { name:'Passage',       w:4,  h:6,  color:'#334155', icon:'🚶' },
+    utility:  { name:'Utility',       w:4,  h:4,  color:'#7c2d12', icon:'🔧' },
 };
 
 const DOOR_PRESETS = {
@@ -1491,13 +1503,13 @@ const LAYER_DEFS = [
 
 function createFloorLayoutFromScreenshot() {
     return [
-        { id:gid(), name:'Bedroom 2',  x:0,  y:0,  w:10, h:10, color:'#312e81', icon:'🛏️', vastu:'South-West (100 sqft)' },
-        { id:gid(), name:'Bathroom',   x:10, y:3,  w:8,  h:5,  color:'#155e75', icon:'🚿', vastu:'West / NW (40 sqft)' },
-        { id:gid(), name:'Bedroom 3',  x:18, y:0,  w:9,  h:10, color:'#4c1d95', icon:'🛏️', vastu:'North-West (90 sqft)' },
-        { id:gid(), name:'Bathroom',   x:19, y:11, w:6,  h:4,  color:'#0e7490', icon:'🚿', vastu:'East / NE (24 sqft)' },
-        { id:gid(), name:'Kitchen',    x:0,  y:17, w:9,  h:6,  color:'#78350f', icon:'🍳', vastu:'South-East (54 sqft)' },
-        { id:gid(), name:'Dining Area',x:9,  y:17, w:8,  h:6,  color:'#831843', icon:'🍽️', vastu:'East (48 sqft)' },
-        { id:gid(), name:'Bedroom',    x:17, y:14, w:10, h:9,  color:'#3730a3', icon:'🛏️', vastu:'South-East (90 sqft)' },
+        { id:gid(), name:'Bedroom 2',  x:0,  y:0,  w:10, h:10, color:'#4338ca', icon:'🛏️', vastu:'South-West (100 sqft)' },
+        { id:gid(), name:'Bathroom',   x:10, y:3,  w:8,  h:5,  color:'#0284c7', icon:'🚿', vastu:'West / NW (40 sqft)' },
+        { id:gid(), name:'Bedroom 3',  x:18, y:0,  w:9,  h:10, color:'#6d28d9', icon:'🛏️', vastu:'North-West (90 sqft)' },
+        { id:gid(), name:'Bathroom',   x:19, y:11, w:6,  h:4,  color:'#0ea5e9', icon:'🚿', vastu:'East / NE (24 sqft)' },
+        { id:gid(), name:'Kitchen',    x:0,  y:17, w:9,  h:6,  color:'#d97706', icon:'🍳', vastu:'South-East (54 sqft)' },
+        { id:gid(), name:'Dining Area',x:9,  y:17, w:8,  h:6,  color:'#be185d', icon:'🍽️', vastu:'East (48 sqft)' },
+        { id:gid(), name:'Bedroom',    x:17, y:14, w:10, h:9,  color:'#4f46e5', icon:'🛏️', vastu:'South-East (90 sqft)' },
     ];
 }
 
@@ -1703,27 +1715,23 @@ document.addEventListener('keyup', (e) => {
     }
 });
 
-// Mobile Drawer Toggle
-function toggleMobileDrawer(side) {
-    const lp = document.getElementById('leftPanel');
-    const rp = document.getElementById('rightPanel');
-    const bCanvas = document.getElementById('mBtnCanvas');
-    const bAdd = document.getElementById('mBtnAdd');
-    const bProps = document.getElementById('mBtnProps');
-
+// Sidebar Collapse & Mobile Drawer Toggle
+function toggleSidebar(side) {
     if (side === 'left') {
-        lp.classList.toggle('open'); rp.classList.remove('open');
+        const lp = document.getElementById('leftPanel');
+        lp.classList.toggle('collapsed');
+        const b = document.getElementById('btnShowLeft');
+        if (b) b.style.display = lp.classList.contains('collapsed') ? 'block' : 'none';
     } else if (side === 'right') {
-        rp.classList.toggle('open'); lp.classList.remove('open');
-    } else {
-        lp.classList.remove('open'); rp.classList.remove('open');
+        const rp = document.getElementById('rightPanel');
+        rp.classList.toggle('collapsed');
+        const b = document.getElementById('btnShowRight');
+        if (b) b.style.display = rp.classList.contains('collapsed') ? 'block' : 'none';
     }
+}
 
-    if (bCanvas && bAdd && bProps) {
-        bCanvas.classList.toggle('active', !lp.classList.contains('open') && !rp.classList.contains('open'));
-        bAdd.classList.toggle('active', lp.classList.contains('open'));
-        bProps.classList.toggle('active', rp.classList.contains('open'));
-    }
+function toggleMobileDrawer(side) {
+    toggleSidebar(side);
 }
 
 // State Helpers
@@ -2789,11 +2797,11 @@ function init3DEngine() {
     const height = container.clientHeight || window.innerHeight - 80;
 
     scene3D = new THREE.Scene();
-    scene3D.background = new THREE.Color(0x0a0f1a);
-    scene3D.fog = new THREE.FogExp2(0x0a0f1a, 0.008);
+    scene3D.background = new THREE.Color(0x0f172a);
+    scene3D.fog = new THREE.FogExp2(0x0f172a, 0.005);
 
     camera3D = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
-    camera3D.position.set(BW * 1.5, 50, BH * 2);
+    camera3D.position.set(BW * 1.5, 45, BH * 1.8);
 
     renderer3D = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer3D.setSize(width, height);
@@ -2810,15 +2818,18 @@ function init3DEngine() {
         controls3D.maxPolarAngle = Math.PI / 2.05;
     }
 
-    scene3D.add(new THREE.AmbientLight(0xffffff, 0.7));
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
-    dirLight.position.set(50, 80, 40);
+    // Perfectly Balanced High-Contrast Studio Lighting
+    scene3D.add(new THREE.AmbientLight(0xffffff, 0.45));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.75);
+    dirLight.position.set(40, 70, 50);
     dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
     scene3D.add(dirLight);
 
-    const pointLight = new THREE.PointLight(0x818cf8, 1.2, 100);
-    pointLight.position.set(BW / 2, 30, BH / 2);
-    scene3D.add(pointLight);
+    const fillLight = new THREE.PointLight(0x6366f1, 0.5, 120);
+    fillLight.position.set(BW / 2, 30, BH / 2);
+    scene3D.add(fillLight);
 
     window.addEventListener('resize', resize3D);
 }
@@ -2857,8 +2868,10 @@ function build3DScene() {
         if (layers.rooms !== false) {
             const floorRooms = floors[fKey] || [];
             floorRooms.forEach(r => {
-                const tileGeo = new THREE.BoxGeometry(r.w - 0.1, 0.1, r.h - 0.1);
-                const tileMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(r.color || '#4338ca'), roughness: 0.4 });
+                const isTileRoom = r.name.toLowerCase().includes('kitchen') || r.name.toLowerCase().includes('bath') || r.name.toLowerCase().includes('toilet');
+                const tileGeo = new THREE.BoxGeometry(r.w - 0.05, 0.1, r.h - 0.05);
+                // Oak Wood Plank for Living/Bedrooms/Dining (0xc4a482), Soft Slate Tile for Kitchen/Bath (0x94a3b8)
+                const tileMat = new THREE.MeshStandardMaterial({ color: isTileRoom ? 0x94a3b8 : 0xc4a482, roughness: 0.5 });
                 const tileMesh = new THREE.Mesh(tileGeo, tileMat);
                 tileMesh.position.set(r.x + r.w / 2, 0.05, r.y + r.h / 2);
                 tileMesh.receiveShadow = true;
@@ -3152,8 +3165,22 @@ function getEffectiveRoomOpenings(room, wallName, allRooms) {
 function create3DRoomWalls(group, room, height, allRooms) {
     const x = room.x, y = room.y, w = room.w, h = room.h;
     const wallThick = 0.3;
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.7 });
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.4 });
+    const capMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
     const roomsList = allRooms || curRooms();
+
+    function addWallSegment(wx, wy, wz, sw, sh, sd) {
+        const geo = new THREE.BoxGeometry(sw, sh, sd);
+        const mesh = new THREE.Mesh(geo, wallMat);
+        mesh.position.set(wx, wy, wz);
+        mesh.castShadow = true; mesh.receiveShadow = true;
+        group.add(mesh);
+
+        const capGeo = new THREE.BoxGeometry(sw, 0.2, sd);
+        const capMesh = new THREE.Mesh(capGeo, capMat);
+        capMesh.position.set(wx, sh + 0.1, wz);
+        group.add(capMesh);
+    }
 
     // North Wall
     const nOps = getEffectiveRoomOpenings(room, 'north', roomsList);
@@ -3161,11 +3188,7 @@ function create3DRoomWalls(group, room, height, allRooms) {
     nSegs.forEach(s => {
         if (!s.isOpen) {
             const subW = s.end - s.start;
-            const geo = new THREE.BoxGeometry(subW, height, wallThick);
-            const mesh = new THREE.Mesh(geo, wallMat);
-            mesh.position.set(x + s.start + subW / 2, height / 2, y);
-            mesh.castShadow = true; mesh.receiveShadow = true;
-            group.add(mesh);
+            addWallSegment(x + s.start + subW / 2, height / 2, y, subW, height, wallThick);
         }
     });
 
@@ -3175,11 +3198,7 @@ function create3DRoomWalls(group, room, height, allRooms) {
     sSegs.forEach(s => {
         if (!s.isOpen) {
             const subW = s.end - s.start;
-            const geo = new THREE.BoxGeometry(subW, height, wallThick);
-            const mesh = new THREE.Mesh(geo, wallMat);
-            mesh.position.set(x + s.start + subW / 2, height / 2, y + h);
-            mesh.castShadow = true; mesh.receiveShadow = true;
-            group.add(mesh);
+            addWallSegment(x + s.start + subW / 2, height / 2, y + h, subW, height, wallThick);
         }
     });
 
@@ -3189,11 +3208,7 @@ function create3DRoomWalls(group, room, height, allRooms) {
     wSegs.forEach(s => {
         if (!s.isOpen) {
             const subH = s.end - s.start;
-            const geo = new THREE.BoxGeometry(wallThick, height, subH);
-            const mesh = new THREE.Mesh(geo, wallMat);
-            mesh.position.set(x, height / 2, y + s.start + subH / 2);
-            mesh.castShadow = true; mesh.receiveShadow = true;
-            group.add(mesh);
+            addWallSegment(x, height / 2, y + s.start + subH / 2, wallThick, height, subH);
         }
     });
 
@@ -3203,74 +3218,56 @@ function create3DRoomWalls(group, room, height, allRooms) {
     eSegs.forEach(s => {
         if (!s.isOpen) {
             const subH = s.end - s.start;
-            const geo = new THREE.BoxGeometry(wallThick, height, subH);
-            const mesh = new THREE.Mesh(geo, wallMat);
-            mesh.position.set(x + w, height / 2, y + s.start + subH / 2);
-            mesh.castShadow = true; mesh.receiveShadow = true;
-            group.add(mesh);
+            addWallSegment(x + w, height / 2, y + s.start + subH / 2, wallThick, height, subH);
         }
     });
 }
 
 function render2DRoomFurnishing(r, rw, rh) {
-    const nameLower = r.name.toLowerCase();
+    const nameLower = (r.name || '').toLowerCase();
     let svg = '';
 
-    if (nameLower.includes('bedroom 2')) {
-        // Bedroom 2 Layout: King Bed, Pillows, Nightstands, Wardrobe, Study Desk
-        const bedW = 6.5 * S, bedH = 6 * S;
-        const bedX = (rw - bedW) / 2;
-        const bedY = rh - bedH - 8;
-
-        // Area Carpet
-        svg += `<rect x="${bedX - 12}" y="${bedY - 10}" width="${bedW + 24}" height="${bedH + 20}" fill="rgba(255,255,255,0.06)" rx="6" stroke="rgba(255,255,255,0.1)" stroke-dasharray="3,2"/>`;
-
-        // Headboard
-        svg += `<rect x="${bedX}" y="${bedY + bedH - 6}" width="${bedW}" height="8" fill="#1e1b4b" rx="2"/>`;
-
-        // Bed Frame & Mattress
-        svg += `<rect x="${bedX + 4}" y="${bedY}" width="${bedW - 8}" height="${bedH - 6}" fill="#312e81" stroke="#818cf8" stroke-width="1.5" rx="4"/>`;
-        // Duvet / Blanket
-        svg += `<rect x="${bedX + 4}" y="${bedY + bedH * 0.35}" width="${bedW - 8}" height="${bedH * 0.55}" fill="#4338ca" rx="2"/>`;
-        // Folded Sheet Line
-        svg += `<line x1="${bedX + 4}" y1="${bedY + bedH * 0.35}" x2="${bedX + bedW - 4}" y2="${bedY + bedH * 0.35}" stroke="#a5b4fc" stroke-width="1.5"/>`;
-
-        // Dual Pillows
-        const pW = (bedW - 24) / 2;
-        svg += `<rect x="${bedX + 8}" y="${bedY + bedH - 24}" width="${pW}" height="14" fill="#f8fafc" rx="3" stroke="#cbd5e1"/>`;
-        svg += `<rect x="${bedX + bedW - 8 - pW}" y="${bedY + bedH - 24}" width="${pW}" height="14" fill="#f8fafc" rx="3" stroke="#cbd5e1"/>`;
-
-        // Nightstands with Lamps
-        const nsSize = 1.5 * S;
-        svg += `<g transform="translate(${bedX - nsSize - 4}, ${bedY + bedH - nsSize})">
-            <rect width="${nsSize}" height="${nsSize}" fill="#1e1b4b" stroke="#6366f1" rx="2"/>
-            <circle cx="${nsSize/2}" cy="${nsSize/2}" r="5" fill="#facc15"/>
-        </g>`;
-        svg += `<g transform="translate(${bedX + bedW + 4}, ${bedY + bedH - nsSize})">
-            <rect width="${nsSize}" height="${nsSize}" fill="#1e1b4b" stroke="#6366f1" rx="2"/>
-            <circle cx="${nsSize/2}" cy="${nsSize/2}" r="5" fill="#facc15"/>
+    // 1. BATHROOM / TOILET / WASHROOM (Commode, Wash Basin + Tap, Shower Enclosure)
+    if (nameLower.includes('bath') || nameLower.includes('toilet') || nameLower.includes('washroom') || nameLower.includes('wc')) {
+        // Commode (Western Toilet) at Top-Left Corner
+        const wcW = 1.2 * S, wcH = 1.6 * S;
+        svg += `<g transform="translate(6, 6)">
+            <!-- Tank -->
+            <rect width="${wcW}" height="${wcH * 0.4}" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="2"/>
+            <circle cx="${wcW/2}" cy="${wcH * 0.2}" r="2" fill="#0284c7"/>
+            <!-- Bowl -->
+            <ellipse cx="${wcW/2}" cy="${wcH * 0.7}" rx="${wcW*0.42}" ry="${wcH*0.35}" fill="#ffffff" stroke="#94a3b8" stroke-width="1.2"/>
+            <ellipse cx="${wcW/2}" cy="${wcH * 0.7}" rx="${wcW*0.28}" ry="${wcH*0.22}" fill="#0284c7" fill-opacity="0.3" stroke="#38bdf8" stroke-width="0.8"/>
+            <text x="${wcW/2}" y="${wcH + 9}" text-anchor="middle" fill="#64748b" font-size="7" font-weight="600">WC Commode</text>
         </g>`;
 
-        // Wardrobe on East Wall
-        const wardW = 2 * S, wardH = Math.min(rh * 0.7, 7 * S);
-        svg += `<g transform="translate(${rw - wardW - 4}, ${10})">
-            <rect width="${wardW}" height="${wardH}" fill="#1e1b4b" stroke="#a5b4fc" stroke-width="1.5" rx="3"/>
-            <line x1="0" y1="${wardH/2}" x2="${wardW}" y2="${wardH/2}" stroke="#6366f1" stroke-dasharray="2,2"/>
-            <text x="${wardW/2}" y="${wardH/2 + 3}" text-anchor="middle" fill="#c7d2fe" font-size="8" font-weight="600">Wardrobe</text>
+        // Wash Basin & Tap Vanity Counter (Top-Right)
+        const basinW = 2.2 * S, basinH = 1.4 * S;
+        const basinX = rw - basinW - 6;
+        svg += `<g transform="translate(${basinX}, 6)">
+            <rect width="${basinW}" height="${basinH}" fill="#334155" stroke="#64748b" stroke-width="1" rx="2"/>
+            <!-- Oval Basin -->
+            <ellipse cx="${basinW/2}" cy="${basinH/2 + 2}" rx="${basinW*0.38}" ry="${basinH*0.3}" fill="#ffffff" stroke="#0284c7" stroke-width="1"/>
+            <!-- Chrome Tap / Faucet -->
+            <rect x="${basinW/2 - 2}" y="2" width="4" height="6" fill="#cbd5e1" rx="1"/>
+            <circle cx="${basinW/2}" cy="5" r="2.5" fill="#38bdf8"/>
+            <text x="${basinW/2}" y="${basinH + 9}" text-anchor="middle" fill="#64748b" font-size="7" font-weight="600">Basin & Tap</text>
         </g>`;
 
-        // Study Desk on West Wall
-        const deskW = 3.5 * S, deskH = 1.8 * S;
-        svg += `<g transform="translate(${4}, ${10})">
-            <rect width="${deskW}" height="${deskH}" fill="#312e81" stroke="#818cf8" rx="2"/>
-            <rect x="${deskW/2 - 8}" y="3" width="16" height="10" fill="#0f172a" rx="1"/>
-            <circle cx="${deskW/2}" cy="${deskH + 8}" r="6" fill="#6366f1"/>
+        // Shower Area & Glass Enclosure (Bottom-Right)
+        const showerW = Math.min(rw * 0.45, 2.5 * S), showerH = Math.min(rh * 0.45, 2.5 * S);
+        const showerX = rw - showerW - 6, showerY = rh - showerH - 6;
+        svg += `<g transform="translate(${showerX}, ${showerY})">
+            <rect width="${showerW}" height="${showerH}" fill="rgba(14, 116, 144, 0.15)" stroke="#38bdf8" stroke-width="1" stroke-dasharray="3,2" rx="2"/>
+            <!-- Overhead Shower Rose -->
+            <circle cx="${showerW/2}" cy="${showerH/2}" r="7" fill="none" stroke="#38bdf8" stroke-width="1.2"/>
+            <circle cx="${showerW/2}" cy="${showerH/2}" r="2" fill="#38bdf8"/>
+            <text x="${showerW/2}" y="${showerH/2 + 13}" text-anchor="middle" fill="#38bdf8" font-size="7" font-weight="600">Shower</text>
         </g>`;
-
-    } else if (nameLower.includes('kitchen')) {
-        // Kitchen Layout: L-Counter, Cooktop Gas Stove, Dual Sink, Refrigerator
+    }
+    // 2. KITCHEN (Granite Counter, Fridge, Gas Stove, Sink + Tap)
+    else if (nameLower.includes('kitchen')) {
         const cDepth = 2 * S;
-
         // L-Shaped Countertop (South & West walls)
         svg += `<path d="M 0 0 L ${cDepth} 0 L ${cDepth} ${rh - cDepth} L ${rw} ${rh - cDepth} L ${rw} ${rh} L 0 ${rh} Z" fill="#27272a" stroke="#71717a" stroke-width="1.5"/>`;
 
@@ -3294,7 +3291,7 @@ function render2DRoomFurnishing(r, rw, rh) {
             <circle cx="${stoveW*0.75}" cy="${stoveH*0.7}" r="5" fill="none" stroke="#ef4444" stroke-width="1.5"/>
         </g>`;
 
-        // Dual Basin Kitchen Sink on West Counter
+        // Dual Basin Kitchen Sink + Gooseneck Tap on West Counter
         const sinkW = 1.8 * S, sinkH = 3 * S;
         const sinkX = (cDepth - sinkW) / 2;
         const sinkY = (rh - sinkH) / 2;
@@ -3302,7 +3299,97 @@ function render2DRoomFurnishing(r, rw, rh) {
             <rect width="${sinkW}" height="${sinkH}" fill="#3f3f46" stroke="#38bdf8" stroke-width="1.5" rx="3"/>
             <rect x="3" y="3" width="${sinkW - 6}" height="${sinkH/2 - 4}" fill="#0284c7" fill-opacity="0.4" rx="2"/>
             <rect x="3" y="${sinkH/2 + 1}" width="${sinkW - 6}" height="${sinkH/2 - 4}" fill="#0284c7" fill-opacity="0.4" rx="2"/>
+            <!-- Gooseneck Tap & Spout -->
             <circle cx="${sinkW/2}" cy="${sinkH/2}" r="3" fill="#e0f2fe"/>
+            <path d="M ${sinkW/2} ${sinkH/2} L ${sinkW/2 - 4} ${sinkH/2}" stroke="#ffffff" stroke-width="2"/>
+            <text x="${sinkW/2 + 10}" y="${sinkH/2 + 3}" fill="#38bdf8" font-size="7" font-weight="700">Sink & Tap</text>
+        </g>`;
+    }
+    // 3. BEDROOM (Any Bedroom)
+    else if (nameLower.includes('bedroom') || nameLower.includes('bed')) {
+        const bedW = Math.min(6.5 * S, rw * 0.65), bedH = Math.min(6 * S, rh * 0.6);
+        const bedX = (rw - bedW) / 2;
+        const bedY = rh - bedH - 8;
+
+        // Area Rug
+        svg += `<rect x="${bedX - 10}" y="${bedY - 8}" width="${bedW + 20}" height="${bedH + 16}" fill="rgba(255,255,255,0.05)" rx="6" stroke="rgba(255,255,255,0.1)" stroke-dasharray="3,2"/>`;
+
+        // Headboard
+        svg += `<rect x="${bedX}" y="${bedY + bedH - 6}" width="${bedW}" height="8" fill="#1e1b4b" rx="2"/>`;
+
+        // Bed Frame & Mattress
+        svg += `<rect x="${bedX + 4}" y="${bedY}" width="${bedW - 8}" height="${bedH - 6}" fill="#312e81" stroke="#818cf8" stroke-width="1.5" rx="4"/>`;
+        // Duvet
+        svg += `<rect x="${bedX + 4}" y="${bedY + bedH * 0.35}" width="${bedW - 8}" height="${bedH * 0.55}" fill="#4338ca" rx="2"/>`;
+        svg += `<line x1="${bedX + 4}" y1="${bedY + bedH * 0.35}" x2="${bedX + bedW - 4}" y2="${bedY + bedH * 0.35}" stroke="#a5b4fc" stroke-width="1.5"/>`;
+
+        // Pillows
+        const pW = (bedW - 24) / 2;
+        svg += `<rect x="${bedX + 8}" y="${bedY + bedH - 24}" width="${pW}" height="14" fill="#f8fafc" rx="3" stroke="#cbd5e1"/>`;
+        svg += `<rect x="${bedX + bedW - 8 - pW}" y="${bedY + bedH - 24}" width="${pW}" height="14" fill="#f8fafc" rx="3" stroke="#cbd5e1"/>`;
+
+        // Nightstands
+        const nsSize = 1.4 * S;
+        if (bedX - nsSize - 4 > 0) {
+            svg += `<g transform="translate(${bedX - nsSize - 4}, ${bedY + bedH - nsSize})">
+                <rect width="${nsSize}" height="${nsSize}" fill="#1e1b4b" stroke="#6366f1" rx="2"/>
+                <circle cx="${nsSize/2}" cy="${nsSize/2}" r="4" fill="#facc15"/>
+            </g>`;
+        }
+        if (bedX + bedW + 4 + nsSize < rw) {
+            svg += `<g transform="translate(${bedX + bedW + 4}, ${bedY + bedH - nsSize})">
+                <rect width="${nsSize}" height="${nsSize}" fill="#1e1b4b" stroke="#6366f1" rx="2"/>
+                <circle cx="${nsSize/2}" cy="${nsSize/2}" r="4" fill="#facc15"/>
+            </g>`;
+        }
+
+        // Wardrobe on East Wall
+        const wardW = 1.8 * S, wardH = Math.min(rh * 0.6, 6.5 * S);
+        if (rw - wardW - 4 > bedX + bedW) {
+            svg += `<g transform="translate(${rw - wardW - 4}, 8)">
+                <rect width="${wardW}" height="${wardH}" fill="#1e1b4b" stroke="#a5b4fc" stroke-width="1.2" rx="3"/>
+                <line x1="0" y1="${wardH/2}" x2="${wardW}" y2="${wardH/2}" stroke="#6366f1" stroke-dasharray="2,2"/>
+                <text x="${wardW/2}" y="${wardH/2 + 3}" text-anchor="middle" fill="#c7d2fe" font-size="7" font-weight="600">Wardrobe</text>
+            </g>`;
+        }
+    }
+    // 4. DINING AREA / LIVING ROOM (Dining Table, 6 Chairs, Dining Wash Basin)
+    else if (nameLower.includes('dining') || nameLower.includes('living') || nameLower.includes('hall')) {
+        // Dining Table with Chairs
+        const tblW = Math.min(5.5 * S, rw * 0.5), tblH = Math.min(3.5 * S, rh * 0.4);
+        const tblX = (rw - tblW) / 2, tblY = (rh - tblH) / 2;
+
+        svg += `<rect x="${tblX}" y="${tblY}" width="${tblW}" height="${tblH}" fill="#831843" stroke="#f472b6" stroke-width="1.5" rx="4"/>`;
+        // Table Centerpiece
+        svg += `<circle cx="${tblX + tblW/2}" cy="${tblY + tblH/2}" r="6" fill="#fb7185"/>`;
+
+        // 6 Chairs
+        const cW = 1.2 * S, cH = 1.0 * S;
+        // Top Chairs
+        svg += `<rect x="${tblX + tblW*0.25 - cW/2}" y="${tblY - cH - 2}" width="${cW}" height="${cH}" fill="#4c0519" stroke="#f472b6" rx="2"/>`;
+        svg += `<rect x="${tblX + tblW*0.75 - cW/2}" y="${tblY - cH - 2}" width="${cW}" height="${cH}" fill="#4c0519" stroke="#f472b6" rx="2"/>`;
+        // Bottom Chairs
+        svg += `<rect x="${tblX + tblW*0.25 - cW/2}" y="${tblY + tblH + 2}" width="${cW}" height="${cH}" fill="#4c0519" stroke="#f472b6" rx="2"/>`;
+        svg += `<rect x="${tblX + tblW*0.75 - cW/2}" y="${tblY + tblH + 2}" width="${cW}" height="${cH}" fill="#4c0519" stroke="#f472b6" rx="2"/>`;
+
+        // Dining Wash Basin + Tap Counter (Northeast corner)
+        const dBasinW = 2 * S, dBasinH = 1.4 * S;
+        svg += `<g transform="translate(${rw - dBasinW - 4}, 4)">
+            <rect width="${dBasinW}" height="${dBasinH}" fill="#1e293b" stroke="#f472b6" rx="2"/>
+            <ellipse cx="${dBasinW/2}" cy="${dBasinH/2}" rx="${dBasinW*0.35}" ry="${dBasinH*0.3}" fill="#ffffff" stroke="#38bdf8"/>
+            <circle cx="${dBasinW/2}" cy="${dBasinH/2 - 4}" r="2" fill="#38bdf8"/>
+            <text x="${dBasinW/2}" y="${dBasinH + 8}" text-anchor="middle" fill="#f472b6" font-size="7" font-weight="600">Dining Basin</text>
+        </g>`;
+    }
+    // 5. POOJA ROOM
+    else if (nameLower.includes('pooja') || nameLower.includes('prayer')) {
+        const mandirW = rw * 0.6, mandirH = rh * 0.4;
+        const mX = (rw - mandirW) / 2, mY = 6;
+        svg += `<g transform="translate(${mX}, ${mY})">
+            <rect width="${mandirW}" height="${mandirH}" fill="#78350f" stroke="#f59e0b" stroke-width="1.5" rx="3"/>
+            <circle cx="${mandirW/2}" cy="${mandirH/2}" r="8" fill="#facc15"/>
+            <text x="${mandirW/2}" y="${mandirH/2 + 3}" text-anchor="middle" fill="#78350f" font-size="9" font-weight="900">🪔</text>
+            <text x="${mandirW/2}" y="${mandirH + 10}" text-anchor="middle" fill="#f59e0b" font-size="7" font-weight="700">Mandir Altar</text>
         </g>`;
     }
 
@@ -3310,91 +3397,140 @@ function render2DRoomFurnishing(r, rw, rh) {
 }
 
 function create3DRoomFurnishing(group, r) {
-    const nameLower = r.name.toLowerCase();
+    const nameLower = (r.name || '').toLowerCase();
     const rx = r.x, ry = r.y, rw = r.w, rh = r.h;
 
-    if (nameLower.includes('bedroom 2')) {
-        const bedW = 6.5, bedH = 6.0, bedHeight = 1.6;
-        const bedX = rx + (rw - bedW) / 2;
-        const bedZ = ry + rh - bedH - 0.4;
+    const whiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
+    const limeMat = new THREE.MeshStandardMaterial({ color: 0x84cc16, roughness: 0.4 });
+    const darkChairMat = new THREE.MeshStandardMaterial({ color: 0x65a30d, roughness: 0.4 });
+    const oakWoodMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.5 });
+    const glassMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, opacity: 0.4, transparent: true });
+    const blackMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4 });
 
-        const hbMat = new THREE.MeshStandardMaterial({ color: 0x1e1b4b, roughness: 0.5 });
-        const hbGeo = new THREE.BoxGeometry(bedW + 0.4, 3.5, 0.4);
-        const hbMesh = new THREE.Mesh(hbGeo, hbMat);
-        hbMesh.position.set(bedX + bedW / 2, 1.75, bedZ + bedH);
-        group.add(hbMesh);
+    // 1. DINING & LIVING ROOM (Matches Arden Estate Reference Image Exactly)
+    if (nameLower.includes('dining') || nameLower.includes('living') || nameLower.includes('hall')) {
+        const tblW = Math.min(6.0, rw * 0.55), tblH = Math.min(3.5, rh * 0.45);
+        const tblX = rx + (rw - tblW) / 2, tblZ = ry + (rh - tblH) / 2;
 
-        const bedMat = new THREE.MeshStandardMaterial({ color: 0x312e81, roughness: 0.6 });
-        const bedGeo = new THREE.BoxGeometry(bedW, bedHeight, bedH);
-        const bedMesh = new THREE.Mesh(bedGeo, bedMat);
-        bedMesh.position.set(bedX + bedW / 2, bedHeight / 2, bedZ + bedH / 2);
-        group.add(bedMesh);
+        // Pure White Dining Table
+        const tableGeo = new THREE.BoxGeometry(tblW, 2.5, tblH);
+        const tableMesh = new THREE.Mesh(tableGeo, whiteMat);
+        tableMesh.position.set(tblX + tblW / 2, 1.25, tblZ + tblH / 2);
+        tableMesh.castShadow = true;
+        group.add(tableMesh);
 
-        const duvetMat = new THREE.MeshStandardMaterial({ color: 0x4338ca, roughness: 0.4 });
-        const duvetGeo = new THREE.BoxGeometry(bedW - 0.2, 0.3, bedH * 0.65);
-        const duvetMesh = new THREE.Mesh(duvetGeo, duvetMat);
-        duvetMesh.position.set(bedX + bedW / 2, bedHeight + 0.15, bedZ + bedH * 0.35);
-        group.add(duvetMesh);
+        // Lime Green Center Table Runner
+        const runnerGeo = new THREE.BoxGeometry(tblW - 0.4, 0.05, tblH * 0.4);
+        const runnerMesh = new THREE.Mesh(runnerGeo, limeMat);
+        runnerMesh.position.set(tblX + tblW / 2, 2.53, tblZ + tblH / 2);
+        group.add(runnerMesh);
 
-        const pillowMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 });
-        const pGeo = new THREE.BoxGeometry((bedW - 1) / 2, 0.3, 1.2);
-        
-        const pLeft = new THREE.Mesh(pGeo, pillowMat);
-        pLeft.position.set(bedX + (bedW - 1) / 4 + 0.2, bedHeight + 0.15, bedZ + bedH - 0.8);
-        group.add(pLeft);
+        // 6 Lime Green Upholstered Dining Chairs
+        const cGeo = new THREE.BoxGeometry(1.2, 2.8, 1.2);
+        const chairOffsets = [
+            { x: tblX + tblW * 0.25, z: tblZ - 0.9 },
+            { x: tblX + tblW * 0.75, z: tblZ - 0.9 },
+            { x: tblX + tblW * 0.25, z: tblZ + tblH + 0.9 },
+            { x: tblX + tblW * 0.75, z: tblZ + tblH + 0.9 },
+            { x: tblX - 0.9, z: tblZ + tblH / 2 },
+            { x: tblX + tblW + 0.9, z: tblZ + tblH / 2 },
+        ];
+        chairOffsets.forEach(cPos => {
+            const chair = new THREE.Mesh(cGeo, darkChairMat);
+            chair.position.set(cPos.x, 1.4, cPos.z);
+            chair.castShadow = true;
+            group.add(chair);
+        });
 
-        const pRight = new THREE.Mesh(pGeo, pillowMat);
-        pRight.position.set(bedX + bedW - (bedW - 1) / 4 - 0.2, bedHeight + 0.15, bedZ + bedH - 0.8);
-        group.add(pRight);
+        // Modern White Sofa + Lime Green Pillows (Living Area)
+        const sofaW = Math.min(7.0, rw * 0.6);
+        const sofaGeo = new THREE.BoxGeometry(sofaW, 1.8, 2.8);
+        const sofaMesh = new THREE.Mesh(sofaGeo, whiteMat);
+        sofaMesh.position.set(rx + rw / 2, 0.9, ry + rh - 2.0);
+        sofaMesh.castShadow = true;
+        group.add(sofaMesh);
 
-        const nsMat = new THREE.MeshStandardMaterial({ color: 0x1e1b4b, roughness: 0.5 });
-        const nsGeo = new THREE.BoxGeometry(1.5, 1.8, 1.5);
-        
-        const ns1 = new THREE.Mesh(nsGeo, nsMat);
-        ns1.position.set(bedX - 1.0, 0.9, bedZ + bedH - 0.75);
-        group.add(ns1);
+        // Lime Green Accent Throw Pillows
+        const pillowGeo = new THREE.BoxGeometry(1.2, 0.8, 0.4);
+        const p1 = new THREE.Mesh(pillowGeo, limeMat);
+        p1.position.set(rx + rw / 2 - 2.0, 1.9, ry + rh - 1.2);
+        group.add(p1);
 
-        const ns2 = new THREE.Mesh(nsGeo, nsMat);
-        ns2.position.set(bedX + bedW + 1.0, 0.9, bedZ + bedH - 0.75);
-        group.add(ns2);
+        const p2 = new THREE.Mesh(pillowGeo, limeMat);
+        p2.position.set(rx + rw / 2 + 2.0, 1.9, ry + rh - 1.2);
+        group.add(p2);
 
-        const wardMat = new THREE.MeshStandardMaterial({ color: 0x1e1b4b, roughness: 0.3 });
-        const wardGeo = new THREE.BoxGeometry(2.0, 7.5, 6.0);
-        const wardMesh = new THREE.Mesh(wardGeo, wardMat);
-        wardMesh.position.set(rx + rw - 1.0, 3.75, ry + 4.0);
-        group.add(wardMesh);
-
-    } else if (nameLower.includes('kitchen')) {
+        // Glass Coffee Table with Black Legs
+        const ctGeo = new THREE.BoxGeometry(4.0, 1.2, 2.0);
+        const ctMesh = new THREE.Mesh(ctGeo, glassMat);
+        ctMesh.position.set(rx + rw / 2, 0.6, ry + rh - 4.5);
+        group.add(ctMesh);
+    }
+    // 2. KITCHEN (Matches Arden Estate Reference Image Exactly)
+    else if (nameLower.includes('kitchen')) {
         const cDepth = 2.0, cHeight = 2.8;
-        const counterMat = new THREE.MeshStandardMaterial({ color: 0x27272a, roughness: 0.3 });
 
-        const sCounterGeo = new THREE.BoxGeometry(rw, cHeight, cDepth);
-        const sCounterMesh = new THREE.Mesh(sCounterGeo, counterMat);
-        sCounterMesh.position.set(rx + rw / 2, cHeight / 2, ry + rh - cDepth / 2);
+        // White Cabinet Bases
+        const sCounterGeo = new THREE.BoxGeometry(rw, cHeight - 0.2, cDepth);
+        const sCounterMesh = new THREE.Mesh(sCounterGeo, whiteMat);
+        sCounterMesh.position.set(rx + rw / 2, (cHeight - 0.2) / 2, ry + rh - cDepth / 2);
         group.add(sCounterMesh);
 
-        const wCounterGeo = new THREE.BoxGeometry(cDepth, cHeight, rh - cDepth);
-        const wCounterMesh = new THREE.Mesh(wCounterGeo, counterMat);
-        wCounterMesh.position.set(rx + cDepth / 2, cHeight / 2, ry + (rh - cDepth) / 2);
+        const wCounterGeo = new THREE.BoxGeometry(cDepth, cHeight - 0.2, rh - cDepth);
+        const wCounterMesh = new THREE.Mesh(wCounterGeo, whiteMat);
+        wCounterMesh.position.set(rx + cDepth / 2, (cHeight - 0.2) / 2, ry + (rh - cDepth) / 2);
         group.add(wCounterMesh);
 
-        const fridgeMat = new THREE.MeshStandardMaterial({ color: 0x52525b, metalness: 0.7, roughness: 0.2 });
+        // Natural Oak Wooden Countertop Slab
+        const sTopGeo = new THREE.BoxGeometry(rw, 0.2, cDepth);
+        const sTopMesh = new THREE.Mesh(sTopGeo, oakWoodMat);
+        sTopMesh.position.set(rx + rw / 2, cHeight - 0.1, ry + rh - cDepth / 2);
+        group.add(sTopMesh);
+
+        const wTopGeo = new THREE.BoxGeometry(cDepth, 0.2, rh - cDepth);
+        const wTopMesh = new THREE.Mesh(wTopGeo, oakWoodMat);
+        wTopMesh.position.set(rx + cDepth / 2, cHeight - 0.1, ry + (rh - cDepth) / 2);
+        group.add(wTopMesh);
+
+        // Refrigerator
         const fridgeGeo = new THREE.BoxGeometry(2.5, 6.5, 2.5);
-        const fridgeMesh = new THREE.Mesh(fridgeGeo, fridgeMat);
+        const fridgeMesh = new THREE.Mesh(fridgeGeo, whiteMat);
         fridgeMesh.position.set(rx + 1.5, 3.25, ry + 1.5);
         group.add(fridgeMesh);
 
-        const stoveMat = new THREE.MeshStandardMaterial({ color: 0x18181b, metalness: 0.8, roughness: 0.2 });
-        const stoveGeo = new THREE.BoxGeometry(3.0, 0.2, 1.8);
-        const stoveMesh = new THREE.Mesh(stoveGeo, stoveMat);
-        stoveMesh.position.set(rx + rw - 2.5, cHeight + 0.1, ry + rh - cDepth / 2);
+        // Black Glass Gas Cooktop
+        const stoveGeo = new THREE.BoxGeometry(3.0, 0.15, 1.8);
+        const stoveMesh = new THREE.Mesh(stoveGeo, blackMat);
+        stoveMesh.position.set(rx + rw - 2.5, cHeight + 0.08, ry + rh - cDepth / 2);
         group.add(stoveMesh);
+    }
+    // 3. BEDROOM & OFFICE
+    else if (nameLower.includes('bedroom') || nameLower.includes('bed')) {
+        const bedW = Math.min(6.5, rw * 0.65), bedH = Math.min(6.0, rh * 0.6), bedHeight = 1.6;
+        const bedX = rx + (rw - bedW) / 2;
+        const bedZ = ry + rh - bedH - 0.4;
 
-        const sinkMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.9, roughness: 0.1 });
-        const sinkGeo = new THREE.BoxGeometry(1.8, 0.15, 3.0);
-        const sinkMesh = new THREE.Mesh(sinkGeo, sinkMat);
-        sinkMesh.position.set(rx + cDepth / 2, cHeight + 0.08, ry + rh / 2);
-        group.add(sinkMesh);
+        const bedGeo = new THREE.BoxGeometry(bedW, bedHeight, bedH);
+        const bedMesh = new THREE.Mesh(bedGeo, whiteMat);
+        bedMesh.position.set(bedX + bedW / 2, bedHeight / 2, bedZ + bedH / 2);
+        group.add(bedMesh);
+
+        // Lime Green Accent Blanket / Duvet
+        const duvetGeo = new THREE.BoxGeometry(bedW - 0.2, 0.2, bedH * 0.65);
+        const duvetMesh = new THREE.Mesh(duvetGeo, limeMat);
+        duvetMesh.position.set(bedX + bedW / 2, bedHeight + 0.1, bedZ + bedH * 0.35);
+        group.add(duvetMesh);
+
+        // White Desk + Black Swivel Chair
+        const deskGeo = new THREE.BoxGeometry(3.5, 2.4, 1.8);
+        const deskMesh = new THREE.Mesh(deskGeo, whiteMat);
+        deskMesh.position.set(rx + 2.2, 1.2, ry + 1.5);
+        group.add(deskMesh);
+
+        const chairGeo = new THREE.BoxGeometry(1.2, 3.2, 1.2);
+        const chairMesh = new THREE.Mesh(chairGeo, blackMat);
+        chairMesh.position.set(rx + 2.2, 1.6, ry + 3.0);
+        group.add(chairMesh);
     }
 }
 
