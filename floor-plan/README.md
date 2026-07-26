@@ -1,132 +1,172 @@
 # Interactive 2D & 3D Vastu Residential Floor Plan Designer
 
-A high-performance, standalone, zero-dependency interactive 2D Blueprint and 3D WebGL Floor Plan Designer tailored for residential G+3 building construction with strict Vastu Shastra compliance.
+A high-performance, standalone, zero-dependency interactive **2D Blueprint & 3D WebGL Floor Plan Designer** tailored for residential G+3 building construction with strict Vastu Shastra compliance, custom doors & windows, full room interior furnishings, sanitaryware, and MEP plumbing/electrical engineering blueprints.
 
-![Floor Plan System Overview](https://img.shields.io/badge/Vastu%20Shastra-Compliant-success?style=for-the-badge)
+![Vastu Compliant](https://img.shields.io/badge/Vastu%20Shastra-Compliant-success?style=for-the-badge)
 ![Plot Dimensions](https://img.shields.io/badge/Plot%20Dimensions-27%27%20x%2023%27%20(621%20sq%20ft)-blue?style=for-the-badge)
 ![Floors](https://img.shields.io/badge/Floors-Ground%20%2B%203%20Floors-violet?style=for-the-badge)
+![3D WebGL Engine](https://img.shields.io/badge/3D%20Engine-Three.js%20r128-orange?style=for-the-badge)
 
 ---
 
-## 🚀 How to Run the Project (Clear Step-by-Step Instructions)
+## 📥 Step-by-Step Instructions: How to Clone & Run Locally
 
-### Option 1: Direct Double-Click (Recommended - No Installation Required)
-Since the application has zero network dependencies and all libraries (Three.js r128 & OrbitControls) are bundled inline:
+### Step 1: Clone the Git Repository
 
-1. Open **Windows File Explorer** and navigate to:
-   ``` repo\sharp-darwin\floor-plan\
-   ```
-2. Double-click on **`index.html`**.
-3. It will instantly open in your default browser (Chrome, Edge, Firefox, or Safari) with full 2D interactive editing and 3D WebGL capabilities.
+Open your terminal or command prompt (PowerShell, Bash, or Git Bash) and run:
 
-**Or via Windows PowerShell**:
-```powershell
-Start-Process "repo\sharp-darwin\floor-plan\index.html"
+```bash
+git clone https://github.com/your-username/floor-plan-designer.git
+```
+
+Then navigate into the project directory:
+
+```bash
+cd floor-plan-designer
+```
+
+*(Or navigate to `sharp-darwin/floor-plan` if inside a multi-package repository)*:
+
+```bash
+cd sharp-darwin/floor-plan
 ```
 
 ---
 
-### Option 2: Local HTTP Server (Node.js)
-If you prefer running the application through a local web server:
+### Step 2: Run the Application Locally
 
-1. Open terminal/PowerShell in the project folder:
-   ```bash
-   cd repo\sharp-darwin\floor-plan
-   ```
-2. Start the local server:
+You can run the application using **any of the 3 options below**:
+
+#### 💡 Option A: Direct Open in Browser (Recommended - Zero Setup / Offline)
+Since the application has zero network dependencies and all 3D WebGL engines (Three.js r128 & OrbitControls) are bundled inline:
+
+1. Open **Windows File Explorer** (or macOS Finder).
+2. Double-click on **`index.html`**.
+3. The floor plan designer will instantly open in your default browser (Chrome, Edge, Firefox, or Safari) with full 2D interactive editing and 3D WebGL rendering!
+
+**Or launch directly via Command Prompt / PowerShell:**
+```powershell
+# Windows PowerShell:
+Start-Process index.html
+
+# macOS Terminal:
+open index.html
+
+# Linux Terminal:
+xdg-open index.html
+```
+
+---
+
+#### 🌐 Option B: Local Node.js Web Server
+If you prefer serving the application through HTTP:
+
+1. Ensure **Node.js** is installed on your computer.
+2. Open terminal in the project directory and run:
    ```bash
    node server.js
    ```
-3. Open your browser and go to:
+3. Open your web browser and go to:
    ```text
    http://localhost:3000
    ```
 
 ---
 
-### Option 3: Rebuilding `index.html` from Template (Developer Mode)
-If you modify `template.html` or update the 3D libraries:
+#### 🔌 Option C: VS Code Live Server Extension
+1. Open the project folder in **Visual Studio Code**.
+2. Install the **Live Server** extension (by Ritwick Dey).
+3. Right-click on `index.html` and select **"Open with Live Server"**.
 
-1. Open terminal inside `floor-plan`:
+---
+
+## 🛠️ Developer Guide: Rebuilding `index.html`
+
+If you modify the source code inside `template.html`:
+
+1. Open terminal inside the project directory.
+2. Run the clean build script:
    ```bash
    node build_clean.js
    ```
-2. This script bundles `template.html`, `three.min.js`, and `OrbitControls.js` into a fresh, standalone `index.html`.
+3. This script automatically compiles `template.html`, `three.min.js`, and `OrbitControls.js` into a standalone production `index.html`.
 
 ---
 
-## 📐 Plot Specifications & Orientation
+## 📂 Project Structure Overview
 
-- **Dimensions**:
-  - **West Wall**: 27' (Rear wall)
-  - **East Wall**: 27' (Frontage facing Main Road)
-  - **South Wall**: 23' (Left boundary)
-  - **North Wall**: 23' (Right boundary)
-- **Total Plot Area**: 621 sq. ft. per floor (G+3 Total Built-up: ~2,484 sq. ft.)
-- **Orientation**: East-facing Plot (Entrance & Main Access Road on East).
-
----
-
-## 🏗️ Structural Fixed Features (Single Source of Truth)
-
-All structural infrastructure elements are permanently fixed with exact hand-drawn blueprint dimensions:
-
-| Feature | Dimensions | Exact Location | Vastu & Engineering Rationale |
-| :--- | :--- | :--- | :--- |
-| **Staircase** | 6' × 7' | **South Wall** (10' from West, 6' from East Road) | Heavy structure placed on South wall to maintain Vastu energy balance. |
-| **West Shaft (Shaft 1)** | 8' × 2' | **West Wall** (10' from SW, 9' from NW) | Primary vertical drop shaft for plumbing supply, graywater, and soil waste. |
-| **Septic Tank** | 8' × 5' | **West Wall** (Attached directly behind Shaft 1) | Positioned in West/NW zone for optimal waste disposal without polluting Ishan energy. |
-| **North Shaft (Shaft 2)** | 4' × 2' | **North Wall** (10' from NW, 9' from NE Road) | Primary electrical riser, floor DB conduits, and AC refrigerant line trunk. |
-| **Borewell (Boring)** | 4' × 4' | **North-East Corner** | Located in NE (Ishan) zone for maximum purity and positive water energy. |
+```text
+floor-plan/
+├── index.html            # Compiled standalone production app (2D + 3D WebGL)
+├── template.html         # Developer source template (HTML, CSS, JS)
+├── mep_blueprint.html    # Interactive MEP Plumbing & Electrical Riser Blueprint
+├── build_clean.js        # Node build compiler script
+├── server.js             # Lightweight Node.js local dev server
+├── three.min.js          # Three.js 3D WebGL engine library
+├── OrbitControls.js      # Three.js 3D camera orbit controls
+└── README.md             # Project documentation & setup guide
+```
 
 ---
 
-## ⚙️ Service Utility Layers & Conduit Routing
+## ✨ Key Features & Capabilities
 
-### 🚰 Water Supply (Blue Layer)
-- **Sump to Riser**: Underground water supply pumped from NE Borewell ($22'\times 18'$) along perimeter lines to **Shaft 1** (West) and **Shaft 2** (North).
-- **Gravity Down-Feed**: Overhead storage tank down-feed lines drop vertically through Shaft 1 directly supplying Master Bathroom, Toilets, and Kitchen.
-
-### 🌀 Sewage & Drainage (Cyan Layer)
-- **Soil & Graywater Drop**: All bathroom and kitchen waste pipes route with a 1:40 gravity slope directly into **Shaft 1**.
-- **Septic Connection**: Main vertical stack in Shaft 1 drops straight into the attached $8'\times 5'$ Septic Tank on the West Wall.
-
-### ⚡ Electrical & AC Conduits (Yellow Layer)
-- **Service Entrance**: Main service wire from East Road feeds into the SE Agneya meter panel.
-- **Riser Trunk**: Main power cable runs up through **Shaft 2** (North Wall) to distribute floor distribution boxes (DBs) on Ground, 1st, 2nd, and 3rd floors.
+### 🛋️ 1. Full Interior Designer Furnishing & Sanitaryware
+- **Bathrooms & Toilets**: Ceramic Western Toilet Commode (WC + Flush Tank), Vanity Wash Basin + Faucet Tap, and Glass Shower Enclosures.
+- **Kitchen**: L-Shaped Granite Countertop, Stainless Steel Dual Basin Sink + Gooseneck Tap, 4-Burner Glass Top Gas Stove, and Double-Door Refrigerator.
+- **Dining Area**: White Dining Table with Lime Green Runner + 6 Upholstered Lime Green Chairs + Dedicated Dining Corner Hand Wash Basin.
+- **Bedrooms**: King/Queen Beds, Upholstered Headboards, Pillows, Duvets, Soft Rugs, Dual Nightstands with Lamps, and Full-Wall Wardrobes.
+- **Pooja Room**: Wooden Mandir Altar + Brass Diya Oil Lamp.
 
 ---
 
-## 🏢 Floor-by-Floor Layout (G+3)
-
-1. **Ground Floor**:
-   - Covered Car Parking Bay ($11'\times 11'$)
-   - East Entrance Lobby facing Road ($10'\times 5'$)
-   - Utility / Storage Room ($6'\times 7'$) in SW
-   - Septic Tank, Borewell, Shaft 1 & Shaft 2
-
-2. **1st Floor (Primary Residence)**:
-   - Master Bedroom ($10'\times 10'$) in SW
-   - Living Room ($8'\times 10'$) in North/East
-   - Agneya Kitchen ($6'\times 6'$) in SE
-   - Dining Hall ($12'\times 5'$)
-   - Bathroom / Toilet ($6'\times 6'$) in West/NW
-
-3. **2nd Floor (Family Residence)**:
-   - Bedroom 2 ($10'\times 10'$) in SW
-   - Bedroom 3 ($9'\times 10'$) in NW
-   - Central Family Lounge ($14'\times 13'$)
-   - Bathroom ($6'\times 6'$)
-
-4. **3rd Floor (Terrace & Guest)**:
-   - Guest Bedroom 4 ($10'\times 10'$) in SW
-   - Open Sky Roof Terrace ($15'\times 23'$) facing North-East
+### 🎲 2. 3D WebGL Architectural Renderer (Arden Estate Architectural Model)
+- **High-Contrast 3D Studio Rendering**: Soft Architectural White Walls (`#F1F5F9`) with Dark Slate Top Cap Trims (`#1E293B`).
+- **Natural Oak & Tile Flooring**: Scandinavian Light Oak Wood Planking (`#C4A482`) for living spaces and Soft Slate Tiles (`#94A3B8`) for wet areas.
+- **3D Doors & Windows**: Pure white 3D door frames and panels swinging open at 45° into rooms + clear glass windows.
+- **Multi-Floor Stack & Explode**: View individual floors or use `💥 Explode` mode to separate floors vertically.
 
 ---
 
-## 💻 Tech Stack & Features
+### 💾 3. Project Backup & Cross-Device Transfer
+- **`💾 Save File`**: Click to download a permanent `.json` backup file (`my-floor-plan-backup-2026-07-26.json`) directly to your computer.
+- **`📂 Load File`**: Click to select and restore any saved `.json` blueprint backup file.
+- **Auto-Save**: Automatic continuous saving to browser local memory (`localStorage`).
+- **Self-Healing Fallback**: Automatically restores default room layouts if browser memory is cleared.
 
-- **Frontend Core**: Vanilla HTML5, JavaScript (ES6+), Vanilla CSS (Neomorphism Dark Theme).
-- **2D Canvas Engine**: SVG Vector Graphics with 1-foot grid snapping, drag-and-drop room repositioning, interactive corner resizing, and target sq. ft. auto-scaling.
-- **3D WebGL Engine**: Three.js (r128) + OrbitControls with soft shadow mapping, 3D extruded room walls, translucent utility shaft columns, 3D stair steps, and animated floor explosion stack (`💥 Explode`).
-- **Offline / Zero Network Dependency**: Three.js and OrbitControls are fully bundled inline directly inside `index.html` for instant local execution via `file:///` URLs without requiring a local web server or internet connection.
+---
+
+### 📐 4. Plot Dimensions & Vastu Alignment
+- **Plot Size**: 27' (E-W) × 23' (S-N) = 621 sq. ft. per floor (G+3 Total: 2,484 sq. ft.).
+- **Vastu Zone Placement**:
+  - Master Bedroom: **South-West** (Earth/Stability)
+  - Kitchen: **South-East** (Agneya/Fire)
+  - Pooja Room: **North-East** (Ishan/Water)
+  - Septic Tank & Utility: **West / North-West**
+  - Staircase: **South Wall** (U-Shaped Clockwise Ascending)
+
+---
+
+## 💾 Saving Manual Edits to Git Repository
+
+To permanently save your manual floor plan layouts to your Git repository so any device pulling the code gets your exact custom setup:
+
+1. Stage your changes:
+   ```bash
+   git add .
+   ```
+2. Commit your custom floor plan state:
+   ```bash
+   git commit -m "Save custom floor plan layout, doors, windows, and furnishings"
+   ```
+3. Push to your remote repository:
+   ```bash
+   git push origin main
+   ```
+
+---
+
+## 📜 License & Acknowledgments
+
+- Built with [Three.js](https://threejs.org/) (r128) and OrbitControls.
+- Inspired by modern architectural estate rendering and Vastu Shastra design principles.
