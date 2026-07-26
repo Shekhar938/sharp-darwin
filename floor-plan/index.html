@@ -1380,7 +1380,7 @@ function gid() { return 'r_' + Math.random().toString(36).substr(2, 9); }
 function snap(v) { return Math.round(v * 2) / 2; }
 function gid() { return Math.random().toString(36).substr(2, 6); }
 
-let plot = { w: 27, h: 23 };
+let plot = {"w":27,"h":33};
 const S = 20; // 1 foot = 20 pixels
 const PAD_TOP = 42;
 const PAD_LEFT = 45;
@@ -1403,31 +1403,463 @@ let curFloor = 'first';
 
 // Mutable Fixed Structures — stored per floor
 let floorFixed = {
-    ground: [
-        { id:'shaft1',    name:'West Shaft 1',  x:10, y:0,  w:8,  h:2, color:'#831843', label:'West Shaft 1 (8\'×2\')', icon:'⚙️', desc:'Top Wall Shaft' },
-        { id:'septic',    name:'Septic Tank',   x:10, y:2,  w:8,  h:6, color:'#334155', label:'Septic Tank (8\'×6\')', icon:'🛢️', desc:'Top Wall Tank' },
-        { id:'stairs',    name:'Staircase',     x:0,  y:10, w:12, h:7, color:'#334155', label:'Staircase (12\'×7\')', icon:'🪜', desc:'Left Wall Stairs' },
-        { id:'shaft2',    name:'North Shaft 2', x:25, y:11, w:2,  h:4, color:'#a16207', label:'North Shaft 2 (2\'×4\')', icon:'⚡', desc:'Right Wall Shaft' },
-        { id:'watertank', name:'Overhead Tank', x:22, y:18, w:5,  h:5, color:'#1d4ed8', label:'Overhead Tank (5\'×5\')', icon:'🚰', desc:'Bottom-Right Tank' },
-        { id:'mainDoor',  isDoor:true, type:'door', name:'Main Double Door', x:11, y:23, w:5, h:0.6, color:'#d97706', icon:'🚪' },
-        { id:'bed2Door',  isDoor:true, type:'door', name:'Bedroom 2 Door',  x:10, y:7,  w:3, h:0.6, color:'#eab308', icon:'🚪' },
-        { id:'bath1Door', isDoor:true, type:'door', name:'Bathroom Door',   x:10, y:4,  w:2.5,h:0.6, color:'#f59e0b', icon:'🚪' },
-        { id:'win1',      isWin:true,  type:'window',name:'Bedroom Window', x:0,  y:4,  w:4, h:0.6, color:'#0284c7', icon:'🪟' },
-        { id:'win2',      isWin:true,  type:'window',name:'Master Window',  x:27, y:4,  w:4, h:0.6, color:'#0284c7', icon:'🪟' }
+    "ground": [
+        {
+            "id": "shaft1",
+            "name": "West Shaft 1",
+            "x": 10,
+            "y": 0,
+            "w": 8,
+            "h": 2,
+            "color": "#831843",
+            "label": "West Shaft 1 (8'×2')",
+            "icon": "⚙️",
+            "desc": "Top Wall Shaft"
+        },
+        {
+            "id": "septic",
+            "name": "Septic Tank",
+            "x": 10,
+            "y": 0,
+            "w": 8,
+            "h": 7,
+            "color": "#334155",
+            "label": "Septic Tank (8'×6')",
+            "icon": "🛢️",
+            "desc": "Top Wall Tank"
+        },
+        {
+            "id": "stairs",
+            "name": "Staircase",
+            "x": 0,
+            "y": 10,
+            "w": 12,
+            "h": 7,
+            "color": "#334155",
+            "label": "Staircase (12'×7')",
+            "icon": "🪜",
+            "desc": "Left Wall Stairs"
+        },
+        {
+            "id": "shaft2",
+            "name": "North Shaft 2",
+            "x": 25,
+            "y": 10,
+            "w": 2,
+            "h": 4,
+            "color": "#a16207",
+            "label": "North Shaft 2 (2'×4')",
+            "icon": "⚡",
+            "desc": "Right Wall Shaft"
+        },
+        {
+            "id": "watertank",
+            "name": "Overhead Tank",
+            "x": 22,
+            "y": 18,
+            "w": 5,
+            "h": 5,
+            "color": "#1d4ed8",
+            "label": "Overhead Tank (5'×5')",
+            "icon": "🚰",
+            "desc": "Bottom-Right Tank"
+        },
+        {
+            "id": "4fvoxw",
+            "name": "Single Door (3')",
+            "x": 9.5,
+            "y": 8.5,
+            "w": 3,
+            "h": 0.6,
+            "color": "#eab308",
+            "icon": "🚪",
+            "desc": "Door/Window",
+            "rotation": 270,
+            "flipSwing": false
+        },
+        {
+            "id": "j7j89w",
+            "name": "Small Window (2')",
+            "x": 9,
+            "y": 0.5,
+            "w": 2,
+            "h": 0.6,
+            "color": "#38bdf8",
+            "icon": "🪟",
+            "desc": "Door/Window",
+            "rotation": 90
+        },
+        {
+            "id": "u5klna",
+            "name": "Small Window (2')",
+            "x": 17,
+            "y": 0.5,
+            "w": 2,
+            "h": 0.6,
+            "color": "#38bdf8",
+            "icon": "🪟",
+            "desc": "Door/Window",
+            "rotation": 90
+        },
+        {
+            "id": "lh0v06",
+            "name": "Small Window (2')",
+            "x": 25,
+            "y": 10.5,
+            "w": 2,
+            "h": 0.6,
+            "color": "#166534",
+            "icon": "🪟",
+            "desc": "Door/Window"
+        },
+        {
+            "id": "opbrzs",
+            "name": "Small Window (2')",
+            "x": 0,
+            "y": 9.5,
+            "w": 2,
+            "h": 0.6,
+            "color": "#38bdf8",
+            "icon": "🪟",
+            "desc": "Door/Window"
+        },
+        {
+            "id": "60sq33",
+            "name": "Borewell / Sump",
+            "x": 22,
+            "y": 26,
+            "w": 3.5,
+            "h": 2,
+            "color": "#14532d",
+            "icon": "💧",
+            "desc": "Fixed Structure",
+            "rotation": 0
+        }
     ],
-    first: [
-        { id:'mainDoor_f1', isDoor:true, type:'door', name:'1st Floor Entry Door', x:11, y:23, w:5, h:0.6, color:'#d97706', icon:'🚪' },
-        { id:'bed2Door_f1', isDoor:true, type:'door', name:'Bedroom 2 Door',       x:10, y:7,  w:3, h:0.6, color:'#eab308', icon:'🚪' },
-        { id:'bath1Door_f1',isDoor:true, type:'door', name:'Bathroom Door',        x:10, y:4,  w:2.5,h:0.6, color:'#f59e0b', icon:'🚪' },
-        { id:'win1_f1',     isWin:true,  type:'window',name:'Bedroom Window',      x:0,  y:4,  w:4, h:0.6, color:'#0284c7', icon:'🪟' },
-        { id:'win2_f1',     isWin:true,  type:'window',name:'Master Window',       x:27, y:4,  w:4, h:0.6, color:'#0284c7', icon:'🪟' }
+    "first": [],
+    "second": [
+        {
+            "id": "riqiv0",
+            "name": "Small Door (2.5')",
+            "x": 12,
+            "y": 20,
+            "w": 2.5,
+            "h": 0.6,
+            "color": "#f59e0b",
+            "icon": "🚪",
+            "desc": "Door/Window",
+            "rotation": 180
+        },
+        {
+            "id": "66dazd",
+            "name": "Single Door (3')",
+            "x": 16.5,
+            "y": 9,
+            "w": 3,
+            "h": 0.6,
+            "color": "#eab308",
+            "icon": "🚪",
+            "desc": "Door/Window",
+            "rotation": 90,
+            "flipSwing": false
+        },
+        {
+            "id": "zwvjkb",
+            "name": "Single Door (3')",
+            "x": 8.5,
+            "y": 8,
+            "w": 3,
+            "h": 0.6,
+            "color": "#eab308",
+            "icon": "🚪",
+            "desc": "Door/Window",
+            "rotation": 270
+        }
     ],
-    second: [], third: []
+    "third": []
 };
 // Legacy alias — always points to current floor's fixed features (used by helpers below)
 let fixedFeatures = [];
 function curFixed() { if (!floorFixed[curFloor]) floorFixed[curFloor] = []; return floorFixed[curFloor]; }
-let floorWalls = { ground: [], first: [], second: [], third: [] };
+let floorWalls = {
+    "ground": [
+        {
+            "id": "1zb713",
+            "x1": 0,
+            "y1": 23,
+            "x2": 0,
+            "y2": 23,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "8900bd",
+            "x1": 27,
+            "y1": 23,
+            "x2": 27,
+            "y2": 23,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "t5gn34",
+            "x1": 27,
+            "y1": 23,
+            "x2": 27,
+            "y2": 32.5,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#78350f"
+        },
+        {
+            "id": "1q1bvj",
+            "x1": 0.5,
+            "y1": 23,
+            "x2": 0.5,
+            "y2": 23,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "10mgxk",
+            "x1": 0.5,
+            "y1": 23,
+            "x2": 7.5,
+            "y2": 26,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#78350f"
+        },
+        {
+            "id": "j9w6rr",
+            "x1": 17.5,
+            "y1": 28.5,
+            "x2": 17.5,
+            "y2": 28.5,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "y61xuk",
+            "x1": 18.5,
+            "y1": 0,
+            "x2": 18.5,
+            "y2": 0,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "vain2v",
+            "x1": 27,
+            "y1": 0,
+            "x2": 27,
+            "y2": 0,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "9ah36s",
+            "x1": 27,
+            "y1": 0,
+            "x2": 27,
+            "y2": 23,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#78350f"
+        },
+        {
+            "id": "oxgwhy",
+            "x1": 18.5,
+            "y1": 0,
+            "x2": 18.5,
+            "y2": 0,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "6jbr1c",
+            "x1": 18.5,
+            "y1": 0,
+            "x2": 27,
+            "y2": 0,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#78350f"
+        },
+        {
+            "id": "mdq0r8",
+            "x1": 0,
+            "y1": 0,
+            "x2": 0,
+            "y2": 0,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "qid6b6",
+            "x1": 0,
+            "y1": 0,
+            "x2": 18.5,
+            "y2": 0,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#78350f"
+        },
+        {
+            "id": "q2vjhi",
+            "x1": 0,
+            "y1": 23.5,
+            "x2": 0,
+            "y2": 23.5,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "o9s7ng",
+            "x1": 0,
+            "y1": 23.5,
+            "x2": 0,
+            "y2": 0,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#78350f"
+        },
+        {
+            "id": "orfsk9",
+            "x1": 18,
+            "y1": 28.5,
+            "x2": 18,
+            "y2": 28.5,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "jmx5xg",
+            "x1": 26.5,
+            "y1": 28.5,
+            "x2": 26.5,
+            "y2": 28.5,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "x8854q",
+            "x1": 26.5,
+            "y1": 28.5,
+            "x2": 18,
+            "y2": 28.5,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#4338ca"
+        }
+    ],
+    "first": [
+        {
+            "id": "nrwtmg",
+            "x1": 34.4,
+            "y1": 18,
+            "x2": 34.4,
+            "y2": 18,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "xngkpn",
+            "x1": 10,
+            "y1": 17,
+            "x2": 10,
+            "y2": 17,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "g1kcue",
+            "x1": 10,
+            "y1": 17,
+            "x2": 12,
+            "y2": 17,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#475569"
+        },
+        {
+            "id": "qmk457",
+            "x1": 12,
+            "y1": 16,
+            "x2": 12,
+            "y2": 16,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "e5p7o0",
+            "x1": 12,
+            "y1": 16,
+            "x2": 12,
+            "y2": 17,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#475569"
+        },
+        {
+            "id": "huuatd",
+            "x1": 12,
+            "y1": 13,
+            "x2": 12,
+            "y2": 13,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "0g37is",
+            "x1": 12,
+            "y1": 13,
+            "x2": 12,
+            "y2": 10.5,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#475569"
+        }
+    ],
+    "second": [
+        {
+            "id": "mzjsk7",
+            "x1": 9,
+            "y1": 17,
+            "x2": 9,
+            "y2": 17,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#facc15"
+        },
+        {
+            "id": "0sb2kl",
+            "x1": 9,
+            "y1": 17,
+            "x2": 12,
+            "y2": 17,
+            "thickness": 0.5,
+            "height": 10,
+            "color": "#475569"
+        }
+    ],
+    "third": []
+};
 
 const FIXED_PRESETS = {
     staircase: { name:'U-Shaped Staircase', w:8, h:8, color:'#475569', icon:'🪜' },
@@ -1516,10 +1948,361 @@ function createFloorLayoutFromScreenshot() {
 
 function makeInitialFloors() {
     return {
-        ground: createFloorLayoutFromScreenshot(),
-        first:  createFloorLayoutFromScreenshot(),
-        second: createFloorLayoutFromScreenshot(),
-        third:  createFloorLayoutFromScreenshot(),
+        "ground": [
+                {
+                        "id": "78hx2n",
+                        "name": "Bedroom 2",
+                        "x": 0,
+                        "y": 0,
+                        "w": 10,
+                        "h": 10,
+                        "color": "#312e81",
+                        "icon": "🛏️",
+                        "vastu": "South-West (100 sqft)"
+                },
+                {
+                        "id": "5ou5ou",
+                        "name": "Bathroom",
+                        "x": 10,
+                        "y": 3,
+                        "w": 8,
+                        "h": 5,
+                        "color": "#155e75",
+                        "icon": "🚿",
+                        "vastu": "West / NW (40 sqft)"
+                },
+                {
+                        "id": "3at5mu",
+                        "name": "Kitchen",
+                        "x": 0,
+                        "y": 17,
+                        "w": 9,
+                        "h": 6,
+                        "color": "#78350f",
+                        "icon": "🍳",
+                        "vastu": "South-East (54 sqft)"
+                }
+        ],
+        "first": [
+                {
+                        "id": "25hmvq",
+                        "name": "Bedroom 2",
+                        "x": 0,
+                        "y": 0,
+                        "w": 11,
+                        "h": 10,
+                        "color": "#312e81",
+                        "icon": "🛏️",
+                        "vastu": "South-West (100 sqft)"
+                },
+                {
+                        "id": "0hc4n1",
+                        "name": "Bathroom",
+                        "x": 11,
+                        "y": 2,
+                        "w": 6,
+                        "h": 5.5,
+                        "color": "#155e75",
+                        "icon": "🚿",
+                        "vastu": "West / NW (40 sqft)"
+                },
+                {
+                        "id": "j4h0fr",
+                        "name": "Bedroom 3",
+                        "x": 17,
+                        "y": 0,
+                        "w": 10,
+                        "h": 11,
+                        "color": "#4c1d95",
+                        "icon": "🛏️",
+                        "vastu": "North-West (90 sqft)"
+                },
+                {
+                        "id": "y49d24",
+                        "name": "Bathroom",
+                        "x": 19,
+                        "y": 11,
+                        "w": 6,
+                        "h": 5,
+                        "color": "#0e7490",
+                        "icon": "🚿",
+                        "vastu": "East / NE (24 sqft)"
+                },
+                {
+                        "id": "6akj11",
+                        "name": "Kitchen",
+                        "x": 0,
+                        "y": 17,
+                        "w": 10,
+                        "h": 6,
+                        "color": "#78350f",
+                        "icon": "🍳",
+                        "vastu": "South-East (54 sqft)",
+                        "openings": [
+                                {
+                                        "id": "op_swrngt",
+                                        "wall": "east",
+                                        "offset": 0,
+                                        "length": 6
+                                }
+                        ]
+                },
+                {
+                        "id": "kb9o6h",
+                        "name": "Dining Area",
+                        "x": 10,
+                        "y": 19,
+                        "w": 10.5,
+                        "h": 7.5,
+                        "color": "#831843",
+                        "icon": "🍽️",
+                        "vastu": "East (48 sqft)",
+                        "openings": [
+                                {
+                                        "id": "op_he97dn",
+                                        "wall": "north",
+                                        "offset": 0,
+                                        "length": 10.5
+                                },
+                                {
+                                        "id": "op_ql46qv",
+                                        "wall": "west",
+                                        "offset": 0,
+                                        "length": 4
+                                },
+                                {
+                                        "id": "op_wlpzw9",
+                                        "wall": "east",
+                                        "offset": 0,
+                                        "length": 1
+                                }
+                        ]
+                },
+                {
+                        "id": "81xfj6",
+                        "name": "Balcony",
+                        "x": 20.5,
+                        "y": 20,
+                        "w": 6.5,
+                        "h": 6.5,
+                        "color": "#14532d",
+                        "icon": "🌿",
+                        "openings": [
+                                {
+                                        "id": "op_06nwy8",
+                                        "wall": "west",
+                                        "offset": 1,
+                                        "length": 4
+                                }
+                        ]
+                },
+                {
+                        "id": "yih14o",
+                        "name": "Pooja Room",
+                        "x": 23,
+                        "y": 16,
+                        "w": 4,
+                        "h": 4,
+                        "color": "#b45309",
+                        "icon": "🪔"
+                }
+        ],
+        "second": [
+                {
+                        "id": "oj4xia",
+                        "name": "Bedroom 2",
+                        "x": 0,
+                        "y": 0,
+                        "w": 10,
+                        "h": 10,
+                        "color": "#312e81",
+                        "icon": "🛏️",
+                        "vastu": "South-West (100 sqft)",
+                        "openings": [
+                                {
+                                        "id": "op_b5zzb0",
+                                        "wall": "east",
+                                        "offset": 7,
+                                        "length": 3
+                                }
+                        ]
+                },
+                {
+                        "id": "h2xq34",
+                        "name": "Bathroom",
+                        "x": 10,
+                        "y": 2,
+                        "w": 8,
+                        "h": 5,
+                        "color": "#155e75",
+                        "icon": "🚿",
+                        "vastu": "West / NW (40 sqft)"
+                },
+                {
+                        "id": "kx6jsj",
+                        "name": "Bedroom 3",
+                        "x": 18,
+                        "y": 0,
+                        "w": 9,
+                        "h": 11,
+                        "color": "#4c1d95",
+                        "icon": "🛏️",
+                        "vastu": "North-West (90 sqft)",
+                        "openings": [
+                                {
+                                        "id": "op_chk2ug",
+                                        "wall": "west",
+                                        "offset": 8,
+                                        "length": 3
+                                }
+                        ]
+                },
+                {
+                        "id": "8hdhwn",
+                        "name": "Bathroom",
+                        "x": 17,
+                        "y": 11,
+                        "w": 8,
+                        "h": 5.5,
+                        "color": "#0e7490",
+                        "icon": "🚿",
+                        "vastu": "East / NE (24 sqft)"
+                },
+                {
+                        "id": "49yfy5",
+                        "name": "Kitchen",
+                        "x": 0,
+                        "y": 17,
+                        "w": 9,
+                        "h": 6,
+                        "color": "#78350f",
+                        "icon": "🍳",
+                        "vastu": "South-East (54 sqft)",
+                        "openings": [
+                                {
+                                        "id": "op_ma4hin",
+                                        "wall": "east",
+                                        "offset": 0,
+                                        "length": 3
+                                }
+                        ]
+                },
+                {
+                        "id": "aattbg",
+                        "name": "Dining Area",
+                        "x": 9,
+                        "y": 20,
+                        "w": 5.5,
+                        "h": 6,
+                        "color": "#831843",
+                        "icon": "🍽️",
+                        "vastu": "East (48 sqft)",
+                        "openings": [
+                                {
+                                        "id": "op_sr6p9j",
+                                        "wall": "north",
+                                        "offset": 3.2,
+                                        "length": 6
+                                },
+                                {
+                                        "id": "op_liorcy",
+                                        "wall": "east",
+                                        "offset": 0,
+                                        "length": 6
+                                }
+                        ]
+                },
+                {
+                        "id": "agvlkf",
+                        "name": "Bedroom",
+                        "x": 14.5,
+                        "y": 16.5,
+                        "w": 10,
+                        "h": 9.5,
+                        "color": "#3730a3",
+                        "icon": "🛏️",
+                        "vastu": "South-East (90 sqft)"
+                }
+        ],
+        "third": [
+                {
+                        "id": "v4jmvg",
+                        "name": "Bedroom 2",
+                        "x": 0,
+                        "y": 0,
+                        "w": 10,
+                        "h": 10,
+                        "color": "#312e81",
+                        "icon": "🛏️",
+                        "vastu": "South-West (100 sqft)"
+                },
+                {
+                        "id": "4erpc5",
+                        "name": "Bathroom",
+                        "x": 10,
+                        "y": 2,
+                        "w": 8,
+                        "h": 4.5,
+                        "color": "#155e75",
+                        "icon": "🚿",
+                        "vastu": "West / NW (40 sqft)"
+                },
+                {
+                        "id": "4krfgt",
+                        "name": "Bedroom 3",
+                        "x": 18,
+                        "y": 0,
+                        "w": 9,
+                        "h": 10,
+                        "color": "#4c1d95",
+                        "icon": "🛏️",
+                        "vastu": "North-West (90 sqft)"
+                },
+                {
+                        "id": "mqwpch",
+                        "name": "Bathroom",
+                        "x": 17,
+                        "y": 10,
+                        "w": 8,
+                        "h": 6.5,
+                        "color": "#0e7490",
+                        "icon": "🚿",
+                        "vastu": "East / NE (24 sqft)"
+                },
+                {
+                        "id": "pxrs2q",
+                        "name": "Kitchen",
+                        "x": 0,
+                        "y": 17,
+                        "w": 9,
+                        "h": 6,
+                        "color": "#78350f",
+                        "icon": "🍳",
+                        "vastu": "South-East (54 sqft)"
+                },
+                {
+                        "id": "0a0jrn",
+                        "name": "Dining Area",
+                        "x": 9,
+                        "y": 19.5,
+                        "w": 8,
+                        "h": 6,
+                        "color": "#831843",
+                        "icon": "🍽️",
+                        "vastu": "East (48 sqft)"
+                },
+                {
+                        "id": "4i4y8a",
+                        "name": "Bedroom",
+                        "x": 17,
+                        "y": 16.5,
+                        "w": 10,
+                        "h": 9,
+                        "color": "#3730a3",
+                        "icon": "🛏️",
+                        "vastu": "South-East (90 sqft)"
+                }
+        ]
     };
 }
 
