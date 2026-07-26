@@ -2385,13 +2385,13 @@ function importProjectJSON(event) {
 // ======================== INIT UI ========================
 function saveData() {
     if (typeof localStorage !== 'undefined') {
-        localStorage.setItem('fp_data_v3', JSON.stringify({ floors, plot, floorFixed, floorWalls, floorConfig }));
+        localStorage.setItem('fp_data_v4_backup1', JSON.stringify({ floors, plot, floorFixed, floorWalls, floorConfig }));
     }
 }
 
 function loadState() {
     try {
-        const saved = localStorage.getItem('fp_data_v3');
+        const saved = localStorage.getItem('fp_data_v4_backup1');
         if (saved) {
             const data = JSON.parse(saved);
             if (data.plot) plot = data.plot;
