@@ -1644,36 +1644,34 @@ function render() {
 
     // MEP OVERLAY LAYERS (Plumbing, Drainage, Electrical)
     if (layers.plumbing) {
-        // Cold & Hot Water Supply Pipes (Blue Dashed Lines)
-        h += `<g opacity="0.85">
-            <path d="M ${PAD_LEFT + 24*S} ${PAD_TOP + 20*S} L ${PAD_LEFT + 12*S} ${PAD_TOP + 20*S} L ${PAD_LEFT + 12*S} ${PAD_TOP + 7*S}" fill="none" stroke="#60a5fa" stroke-width="3" stroke-dasharray="6,4" />
-            <path d="M ${PAD_LEFT + 12*S} ${PAD_TOP + 7*S} L ${PAD_LEFT + 3*S} ${PAD_TOP + 7*S}" fill="none" stroke="#60a5fa" stroke-width="3" stroke-dasharray="6,4" />
-            <circle cx="${PAD_LEFT + 24*S}" cy="${PAD_TOP + 20*S}" r="5" fill="#60a5fa" />
-            <circle cx="${PAD_LEFT + 12*S}" cy="${PAD_TOP + 20*S}" r="4" fill="#60a5fa" />
-            <circle cx="${PAD_LEFT + 3*S}" cy="${PAD_TOP + 7*S}" r="4" fill="#60a5fa" />
-            <text x="${PAD_LEFT + 24*S + 8}" y="${PAD_TOP + 20*S + 3}" fill="#60a5fa" font-size="9" font-weight="700">💧 Water Supply Main</text>
+        // Cold Water Supply Main (CPVC 25mm - Overhead Tank at 22,18 -> Shaft 1 & Shaft 2)
+        h += `<g opacity="0.9">
+            <path d="M ${PAD_LEFT + 24.5*S} ${PAD_TOP + 20.5*S} L ${PAD_LEFT + 26*S} ${PAD_TOP + 20.5*S} L ${PAD_LEFT + 26*S} ${PAD_TOP + 12*S} L ${PAD_LEFT + 14*S} ${PAD_TOP + 1*S}" fill="none" stroke="#38bdf8" stroke-width="3" stroke-dasharray="6,4" />
+            <circle cx="${PAD_LEFT + 24.5*S}" cy="${PAD_TOP + 20.5*S}" r="5" fill="#0284c7" />
+            <circle cx="${PAD_LEFT + 14*S}" cy="${PAD_TOP + 1*S}" r="4" fill="#38bdf8" />
+            <circle cx="${PAD_LEFT + 26*S}" cy="${PAD_TOP + 12*S}" r="4" fill="#38bdf8" />
+            <text x="${PAD_LEFT + 14*S + 8}" y="${PAD_TOP + 1*S + 12}" fill="#38bdf8" font-size="9" font-weight="700">💧 Shaft 1 Water Riser (25mm CPVC)</text>
         </g>`;
     }
 
     if (layers.drainage) {
-        // Waste & Soil Sewage Drainage (Teal/Dark Blue Dashed Lines)
-        h += `<g opacity="0.85">
-            <path d="M ${PAD_LEFT + 3*S} ${PAD_TOP + 20*S} L ${PAD_LEFT + 3*S} ${PAD_TOP + 14*S} L ${PAD_LEFT + 4*S} ${PAD_TOP + 14*S}" fill="none" stroke="#0284c7" stroke-width="4" stroke-dasharray="8,4" />
-            <path d="M ${PAD_LEFT + 3*S} ${PAD_TOP + 14*S} L ${PAD_LEFT + 1*S} ${PAD_TOP + 14*S}" fill="none" stroke="#0284c7" stroke-width="4" stroke-dasharray="8,4" />
-            <circle cx="${PAD_LEFT + 3*S}" cy="${PAD_TOP + 20*S}" r="6" fill="#0284c7" />
-            <circle cx="${PAD_LEFT + 4*S}" cy="${PAD_TOP + 14*S}" r="5" fill="#b91c1c" />
-            <text x="${PAD_LEFT + 3*S + 10}" y="${PAD_TOP + 20*S + 3}" fill="#0284c7" font-size="9" font-weight="700">🚽 Sewage Line</text>
+        // Waste & Soil Sewage Drainage (Red Soil Riser in West Shaft 1 -> Septic Tank)
+        h += `<g opacity="0.9">
+            <path d="M ${PAD_LEFT + 14*S} ${PAD_TOP + 10*S} L ${PAD_LEFT + 14*S} ${PAD_TOP + 1*S} L ${PAD_LEFT + 14*S} ${PAD_TOP + 3.5*S}" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="8,4" />
+            <circle cx="${PAD_LEFT + 14*S}" cy="${PAD_TOP + 1*S}" r="6" fill="#ef4444" />
+            <circle cx="${PAD_LEFT + 14*S}" cy="${PAD_TOP + 3.5*S}" r="6" fill="#7f1d1d" />
+            <text x="${PAD_LEFT + 14*S - 110}" y="${PAD_TOP + 1*S + 12}" fill="#ef4444" font-size="9" font-weight="700">🚽 Shaft 1 Soil Stack (110mm PVC)</text>
         </g>`;
     }
 
     if (layers.electrical) {
-        // Conduit Wire Pathways (Amber Dashed Lines)
-        h += `<g opacity="0.85">
-            <path d="M ${PAD_LEFT + 25*S} ${PAD_TOP + 11*S} L ${PAD_LEFT + 18*S} ${PAD_TOP + 11*S} L ${PAD_LEFT + 18*S} ${PAD_LEFT + 5*S}" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="4,4" />
-            <path d="M ${PAD_LEFT + 18*S} ${PAD_TOP + 11*S} L ${PAD_LEFT + 10*S} ${PAD_TOP + 11*S} L ${PAD_LEFT + 10*S} ${PAD_TOP + 17*S}" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="4,4" />
-            <circle cx="${PAD_LEFT + 25*S}" cy="${PAD_TOP + 11*S}" r="4" fill="#fbbf24" />
-            <circle cx="${PAD_LEFT + 18*S}" cy="${PAD_TOP + 11*S}" r="3" fill="#fbbf24" />
-            <text x="${PAD_LEFT + 25*S - 80}" y="${PAD_TOP + 11*S - 6}" fill="#fbbf24" font-size="9" font-weight="700">⚡ DB Panel Feed</text>
+        // Conduit Wire Pathways (North Shaft 2 Electrical/HVAC Trunk)
+        h += `<g opacity="0.9">
+            <path d="M ${PAD_LEFT + 13.5*S} ${PAD_TOP + BH*S} L ${PAD_LEFT + 26*S} ${PAD_TOP + BH*S} L ${PAD_LEFT + 26*S} ${PAD_TOP + 12*S}" fill="none" stroke="#fbbf24" stroke-width="3.5" />
+            <path d="M ${PAD_LEFT + 26*S} ${PAD_TOP + 12*S} L ${PAD_LEFT + 18*S} ${PAD_TOP + 12*S} L ${PAD_LEFT + 14*S} ${PAD_TOP + 1*S}" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="5,3" />
+            <circle cx="${PAD_LEFT + 26*S}" cy="${PAD_TOP + 12*S}" r="5" fill="#f59e0b" />
+            <circle cx="${PAD_LEFT + 18*S}" cy="${PAD_TOP + 12*S}" r="4" fill="#fbbf24" />
+            <text x="${PAD_LEFT + 26*S - 115}" y="${PAD_TOP + 12*S - 6}" fill="#fbbf24" font-size="9" font-weight="700">⚡ Shaft 2 Power & AC Riser (3-Phase)</text>
         </g>`;
     }
 
@@ -2774,6 +2772,9 @@ function build3DScene() {
             });
         }
 
+        // 3D MEP Layer Rendering (Plumbing, Soil Sewage, & Electrical Conduits)
+        create3DMEPLayers(fGroup, fKey, idx);
+
         // Vastu Layer Overlay in 3D
         if (layers.vastu) {
             (floors[fKey] || []).forEach(r => {
@@ -2792,6 +2793,94 @@ function build3DScene() {
     });
 
     if (controls3D) controls3D.target.set(BW / 2, 10, BH / 2);
+}
+
+function create3DMEPLayers(fGroup, fKey, idx) {
+    const fRooms = floors[fKey] || [];
+    const shaft1X = 14, shaft1Y = 1; // West Shaft 1 Center
+    const shaft2X = 26, shaft2Y = 12; // North Shaft 2 Center
+
+    // 1. PLUMBING LAYER IN 3D (CPVC Water Supply Pipes - Sky Blue)
+    if (layers.plumbing !== false) {
+        const pipeMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.3, metalness: 0.5 });
+        
+        // Vertical Plumbing Riser inside Shaft 1
+        const riserGeo = new THREE.CylinderGeometry(0.15, 0.15, wallHeight3D, 12);
+        const riserMesh = new THREE.Mesh(riserGeo, pipeMat);
+        riserMesh.position.set(shaft1X, wallHeight3D / 2, shaft1Y);
+        fGroup.add(riserMesh);
+
+        // Branch pipes to wet rooms near ceiling height
+        fRooms.forEach(r => {
+            const isWet = r.name.toLowerCase().includes('bath') || r.name.toLowerCase().includes('toilet') || r.name.toLowerCase().includes('kitchen');
+            if (isWet) {
+                const rcx = r.x + r.w / 2, rcy = r.y + r.h / 2;
+                const dist = Math.hypot(rcx - shaft1X, rcy - shaft1Y);
+                if (dist < 0.5) return;
+                const pipeGeo = new THREE.CylinderGeometry(0.08, 0.08, dist, 8);
+                const branchMesh = new THREE.Mesh(pipeGeo, pipeMat);
+                branchMesh.position.set((shaft1X + rcx) / 2, 8.5, (shaft1Y + rcy) / 2);
+                branchMesh.rotation.z = Math.PI / 2;
+                branchMesh.rotation.y = -Math.atan2(rcy - shaft1Y, rcx - shaft1X);
+                fGroup.add(branchMesh);
+            }
+        });
+    }
+
+    // 2. DRAINAGE / SEWAGE LAYER IN 3D (110mm Soil Stack - Red)
+    if (layers.drainage !== false) {
+        const soilMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.4 });
+        
+        // Main Soil Sewage Riser inside West Shaft 1
+        const soilRiserGeo = new THREE.CylinderGeometry(0.22, 0.22, wallHeight3D, 12);
+        const soilRiserMesh = new THREE.Mesh(soilRiserGeo, soilMat);
+        soilRiserMesh.position.set(shaft1X + 0.4, wallHeight3D / 2, shaft1Y + 0.4);
+        fGroup.add(soilRiserMesh);
+
+        // Sloped toilet waste connections
+        fRooms.filter(r => r.name.toLowerCase().includes('bath') || r.name.toLowerCase().includes('toilet')).forEach(r => {
+            const rcx = r.x + r.w / 2, rcy = r.y + r.h / 2;
+            const dist = Math.hypot(rcx - shaft1X, rcy - shaft1Y);
+            if (dist < 0.5) return;
+            const wasteGeo = new THREE.CylinderGeometry(0.12, 0.12, dist, 8);
+            const wasteMesh = new THREE.Mesh(wasteGeo, soilMat);
+            wasteMesh.position.set((shaft1X + rcx) / 2, 0.4, (shaft1Y + rcy) / 2);
+            wasteMesh.rotation.z = Math.PI / 2;
+            wasteMesh.rotation.y = -Math.atan2(rcy - shaft1Y, rcx - shaft1X);
+            fGroup.add(wasteMesh);
+        });
+    }
+
+    // 3. ELECTRICAL & AC CONDUIT LAYER IN 3D (3-Phase Cable - Amber Gold)
+    if (layers.electrical !== false) {
+        const elecMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, roughness: 0.2, metalness: 0.7 });
+        
+        // Electrical Power Riser inside North Shaft 2
+        const elecRiserGeo = new THREE.CylinderGeometry(0.15, 0.15, wallHeight3D, 12);
+        const elecRiserMesh = new THREE.Mesh(elecRiserGeo, elecMat);
+        elecRiserMesh.position.set(shaft2X, wallHeight3D / 2, shaft2Y);
+        fGroup.add(elecRiserMesh);
+
+        // Floor Sub-DB Box mounted on wall
+        const dbMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, metalness: 0.8, roughness: 0.2 });
+        const dbGeo = new THREE.BoxGeometry(1.2, 1.8, 0.3);
+        const dbMesh = new THREE.Mesh(dbGeo, dbMat);
+        dbMesh.position.set(18, 5, 12);
+        fGroup.add(dbMesh);
+
+        // Amber Conduit Pathways from DB Box to all rooms near ceiling
+        fRooms.forEach(r => {
+            const rcx = r.x + r.w / 2, rcy = r.y + r.h / 2;
+            const dist = Math.hypot(rcx - 18, rcy - 12);
+            if (dist < 0.5) return;
+            const conduitGeo = new THREE.CylinderGeometry(0.06, 0.06, dist, 8);
+            const conduitMesh = new THREE.Mesh(conduitGeo, elecMat);
+            conduitMesh.position.set((18 + rcx) / 2, 9.0, (12 + rcy) / 2);
+            conduitMesh.rotation.z = Math.PI / 2;
+            conduitMesh.rotation.y = -Math.atan2(rcy - 12, rcx - 18);
+            fGroup.add(conduitMesh);
+        });
+    }
 }
 
 function create3DSepticTank(group, ff) {

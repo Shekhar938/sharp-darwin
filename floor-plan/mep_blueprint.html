@@ -257,23 +257,31 @@
             const chkGrey = document.getElementById('chkGrey').checked;
             const chkElec = document.getElementById('chkElec').checked;
 
+            const shaft1X = 14, shaft1Y = 1; // Center of West Shaft 1 (10, 0, w:8, h:2)
+            const shaft2X = 26, shaft2Y = 12; // Center of North Shaft 2 (25, 10, w:2, h:4)
+
+            // 1. Water Supply Header (CPVC 25mm - Blue Line)
             if (chkPlumb) {
-                h += `<path d="M ${PAD+24.5*S} ${PAD+20.5*S} L ${PAD+26*S} ${PAD+20.5*S} L ${PAD+26*S} ${PAD+12*S} L ${PAD+26*S} ${PAD+1*S} L ${PAD+13.5*S} ${PAD+1*S}" fill="none" stroke="#0284c7" stroke-width="4"/>`;
+                // Down-feed from Overhead Tank (22, 18) -> Riser Shaft 1 & Shaft 2
+                h += `<path d="M ${PAD+24.5*S} ${PAD+20.5*S} L ${PAD+shaft2X*S} ${PAD+20.5*S} L ${PAD+shaft2X*S} ${PAD+shaft2Y*S} L ${PAD+shaft1X*S} ${PAD+shaft1Y*S}" fill="none" stroke="#0284c7" stroke-width="4" stroke-linecap="round"/>`;
                 (floors[curFloor] || []).forEach(r => {
                     const rcx = r.x + r.w/2, rcy = r.y + r.h/2;
-                    const shaftX = Math.hypot(rcx - 13.5, rcy - 1) < Math.hypot(rcx - 26, rcy - 12) ? 13.5 : 26;
-                    const shaftY = shaftX === 13.5 ? 1 : 12;
-                    h += `<path d="M ${PAD+shaftX*S} ${PAD+shaftY*S} L ${PAD+shaftX*S} ${PAD+rcy*S} L ${PAD+rcx*S} ${PAD+rcy*S}" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4,3"/>`;
+                    const nearestShaftX = Math.hypot(rcx - shaft1X, rcy - shaft1Y) < Math.hypot(rcx - shaft2X, rcy - shaft2Y) ? shaft1X : shaft2X;
+                    const nearestShaftY = nearestShaftX === shaft1X ? shaft1Y : shaft2Y;
+                    h += `<path d="M ${PAD+nearestShaftX*S} ${PAD+nearestShaftY*S} L ${PAD+nearestShaftX*S} ${PAD+rcy*S} L ${PAD+rcx*S} ${PAD+rcy*S}" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4,3"/>`;
                 });
             }
 
+            // 2. Soil Sewage Pipe (PVC 110mm - Red Heavy Line) -> Shaft 1 (West Wall) -> Septic Tank
             if (chkSoil) {
                 (floors[curFloor] || []).filter(r => r.name.toLowerCase().includes('bath') || r.name.toLowerCase().includes('toilet')).forEach(r => {
                     const rcx = r.x + r.w/2, rcy = r.y + r.h/2;
-                    h += `<path d="M ${PAD+rcx*S} ${PAD+rcy*S} L ${PAD+13.5*S} ${PAD+rcy*S} L ${PAD+13.5*S} ${PAD+1*S} L ${PAD+13.5*S} ${PAD+5*S}" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="6,3"/>`;
+                    // Directly route all toilets to Shaft 1 (Plumbing Riser) -> Septic Tank
+                    h += `<path d="M ${PAD+rcx*S} ${PAD+rcy*S} L ${PAD+shaft1X*S} ${PAD+rcy*S} L ${PAD+shaft1X*S} ${PAD+shaft1Y*S}" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="6,3"/>`;
                 });
             }
 
+            // 3. Greywater Drainage (PVC 75mm - Cyan Line) -> Shaft 1 & Shaft 2
             if (chkGrey) {
                 (floors[curFloor] || []).forEach(r => {
                     const rcx = r.x + r.w/2, rcy = r.y + r.h/2;
@@ -281,30 +289,30 @@
                     const isKitchenOrDining = r.name.toLowerCase().includes('kitchen') || r.name.toLowerCase().includes('dining');
 
                     if (isBath) {
-                        h += `<path d="M ${PAD+rcx*S} ${PAD+rcy*S} L ${PAD+13.5*S} ${PAD+rcy*S} L ${PAD+13.5*S} ${PAD+1*S} L ${PAD+sx*S} ${PAD+1*S}" fill="none" stroke="#0284c7" stroke-width="3"/>`;
+                        h += `<path d="M ${PAD+rcx*S} ${PAD+rcy*S} L ${PAD+shaft1X*S} ${PAD+rcy*S} L ${PAD+shaft1X*S} ${PAD+shaft1Y*S} L ${PAD+sx*S} ${PAD+1*S}" fill="none" stroke="#0284c7" stroke-width="3"/>`;
                     } else if (isKitchenOrDining) {
-                        h += `<path d="M ${PAD+rcx*S} ${PAD+rcy*S} L ${PAD+26*S} ${PAD+rcy*S} L ${PAD+26*S} ${PAD+12*S} L ${PAD+26*S} ${PAD+1*S} L ${PAD+sx*S} ${PAD+1*S}" fill="none" stroke="#0369a1" stroke-width="3.5"/>`;
+                        h += `<path d="M ${PAD+rcx*S} ${PAD+rcy*S} L ${PAD+shaft2X*S} ${PAD+rcy*S} L ${PAD+shaft2X*S} ${PAD+shaft2Y*S} L ${PAD+sx*S} ${PAD+1*S}" fill="none" stroke="#0369a1" stroke-width="3.5"/>`;
                     } else {
-                        h += `<path d="M ${PAD+rcx*S} ${PAD+rcy*S} L ${PAD+26*S} ${PAD+rcy*S} L ${PAD+26*S} ${PAD+12*S} L ${PAD+26*S} ${PAD+1*S} L ${PAD+sx*S} ${PAD+1*S}" fill="none" stroke="#0284c7" stroke-width="3"/>`;
+                        h += `<path d="M ${PAD+rcx*S} ${PAD+rcy*S} L ${PAD+shaft2X*S} ${PAD+rcy*S} L ${PAD+shaft2X*S} ${PAD+shaft2Y*S} L ${PAD+sx*S} ${PAD+1*S}" fill="none" stroke="#0284c7" stroke-width="3"/>`;
                     }
                 });
             }
 
+            // 4. Electrical & AC Conduit Trunk (3-Phase Amber Line) -> Main Meter -> Shaft 2 (Electrical Riser) -> Sub-DBs
             if (chkElec) {
-                h += `<path d="M ${PAD+13.5*S} ${PAD+23*S} L ${PAD+2*S} ${PAD+23*S} L ${PAD+2*S} ${PAD+21*S}" fill="none" stroke="#f59e0b" stroke-width="3"/>`;
-                h += `<path d="M ${PAD+2*S} ${PAD+21*S} L ${PAD+26*S} ${PAD+21*S} L ${PAD+26*S} ${PAD+12*S}" fill="none" stroke="#eab308" stroke-width="4"/>`;
-                h += `<path d="M ${PAD+2*S} ${PAD+21*S} L ${PAD+13.5*S} ${PAD+21*S} L ${PAD+13.5*S} ${PAD+1*S}" fill="none" stroke="#eab308" stroke-width="4"/>`;
+                // Main Service Entry from East Road -> SE Meter Panel -> Shaft 2
+                h += `<path d="M ${PAD+13.5*S} ${PAD+BH*S} L ${PAD+26*S} ${PAD+BH*S} L ${PAD+shaft2X*S} ${PAD+shaft2Y*S}" fill="none" stroke="#f59e0b" stroke-width="3"/>`;
+                // Vertical Power Trunk Riser in Shaft 2
+                h += `<path d="M ${PAD+shaft2X*S} ${PAD+shaft2Y*S} L ${PAD+shaft1X*S} ${PAD+shaft2Y*S} L ${PAD+shaft1X*S} ${PAD+shaft1Y*S}" fill="none" stroke="#eab308" stroke-width="4"/>`;
                 
-                const livingRoom = (floors[curFloor] || []).find(r => r.name.toLowerCase().includes('bedroom')) || { x: 17, y: 14, w: 10, h: 9 };
-                const dbx = livingRoom.x + Math.min(4, livingRoom.w/2);
-                const dby = livingRoom.y + Math.min(4, livingRoom.h/2);
+                const dbX = 18, dbY = 12; // Floor DB Panel at North Wall
 
-                h += `<path d="M ${PAD+26*S} ${PAD+12*S} L ${PAD+dbx*S} ${PAD+12*S} L ${PAD+dbx*S} ${PAD+dby*S}" fill="none" stroke="#facc15" stroke-width="3"/>`;
+                h += `<path d="M ${PAD+shaft2X*S} ${PAD+shaft2Y*S} L ${PAD+dbX*S} ${PAD+dbY*S}" fill="none" stroke="#facc15" stroke-width="3"/>`;
 
                 (floors[curFloor] || []).forEach(r => {
                     const rcx = r.x + r.w/2, rcy = r.y + r.h/2;
-                    const startX = Math.hypot(rcx - 13.5, rcy - 1) < Math.hypot(rcx - dbx, rcy - dby) ? 13.5 : dbx;
-                    const startY = startX === 13.5 ? 1 : dby;
+                    const startX = Math.hypot(rcx - shaft1X, rcy - shaft1Y) < Math.hypot(rcx - dbX, rcy - dbY) ? shaft1X : dbX;
+                    const startY = startX === shaft1X ? shaft1Y : dbY;
                     h += `<path d="M ${PAD+startX*S} ${PAD+startY*S} L ${PAD+startX*S} ${PAD+rcy*S} L ${PAD+rcx*S} ${PAD+rcy*S}" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="5,3"/>`;
                 });
             }
