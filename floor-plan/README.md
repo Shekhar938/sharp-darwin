@@ -147,6 +147,58 @@ floor-plan/
 
 ---
 
+## 🚀 Free Deployment Guide (Deploy Online 100% Free)
+
+Since this application is a standalone Single-Page Application (SPA) with zero external server dependencies, you can host it **100% FREE forever** using any of the free cloud resources below:
+
+---
+
+### 🌐 Option 1: GitHub Pages (Recommended - 100% Free & Easiest)
+1. Push your repository to **GitHub**.
+2. On GitHub, navigate to your repository **Settings** -> **Pages** (in the left sidebar).
+3. Under **Build and deployment** -> **Branch**, select `main` (or `master`) and `/ (root)` folder (or `/sharp-darwin/floor-plan`).
+4. Click **Save**.
+5. Within 1 minute, GitHub will give you a live HTTPS web link:
+   `https://your-username.github.io/your-repository-name/`
+
+---
+
+### ⚡ Option 2: Vercel (100% Free - Fastest Deployment & Custom Domain Support)
+1. Sign up for a free account at [Vercel](https://vercel.com) using your GitHub account.
+2. Click **"Add New..."** -> **"Project"**.
+3. Select your `floor-plan-designer` GitHub repository.
+4. Set the Root Directory if needed (`sharp-darwin/floor-plan`), then click **Deploy**.
+5. Vercel will instantly publish your app with a free SSL domain:
+   `https://floor-plan-designer.vercel.app`
+
+---
+
+### 💧 Option 3: Netlify (100% Free)
+1. Sign up for a free account at [Netlify](https://www.netlify.com).
+2. Click **"Add new site"** -> **"Import an existing project"** -> Select **GitHub**.
+3. Pick your repository, leave build command blank, set publish directory to `.` (or `sharp-darwin/floor-plan`).
+4. Click **Deploy Site**.
+5. Netlify will host your site live at:
+   `https://your-app-name.netlify.app`
+
+---
+
+### ☁️ Option 4: Cloudflare Pages (100% Free - Unlimited Bandwidth)
+1. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com) -> Go to **Workers & Pages**.
+2. Click **Create Application** -> **Pages** -> **Connect to Git**.
+3. Select your repository and click **Save and Deploy**.
+
+---
+
+## 📱 Mobile Compatibility & Touch Controls
+
+- **2-Finger Pinch-to-Zoom**: Pinch in or out anywhere on the 2D canvas to scale the layout seamlessly.
+- **1-Finger Drag & Drop**: Tap and drag rooms, doors, windows, and staircases directly on mobile touchscreens.
+- **Mobile Drawer Navigation**: Slide-up bottom sheets for **Plot & Tools** and **Structures & Layers** to maximize touchscreen drawing space.
+- **3D Touch Orbit & Rotate**: Rotate, pan, and zoom 3D WebGL models smoothly using native touch gestures.
+
+---
+
 ## 💾 Saving Manual Edits to Git Repository
 
 To permanently save your manual floor plan layouts to your Git repository so any device pulling the code gets your exact custom setup:
