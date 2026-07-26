@@ -64,8 +64,13 @@
         .left-panel { width: 250px; padding: 10px; background: var(--base); display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.03); z-index: 10; transition: all .25s ease; }
         .right-panel { width: 260px; padding: 10px; background: var(--base); display: flex; flex-direction: column; gap: 10px; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.03); z-index: 10; transition: all .25s ease; }
         .left-panel.collapsed, .right-panel.collapsed { width: 0 !important; min-width: 0 !important; padding: 0 !important; overflow: hidden !important; border: none !important; opacity: 0 !important; pointer-events: none !important; }
-        .panel-card { background: var(--surface); border-radius: 14px; box-shadow: var(--neo-out); padding: 10px; }
-        .panel-title { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); font-weight: 700; margin-bottom: 8px; }
+        .panel-card { background: var(--surface); border-radius: 14px; box-shadow: var(--neo-out); padding: 10px; transition: all .25s ease; }
+        .panel-title { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: color .15s; }
+        .panel-title:hover { color: var(--accent); }
+        .card-toggle-icon { font-size: 10px; color: var(--text3); transition: transform 0.25s ease; font-weight: bold; }
+        .panel-card.collapsed .card-toggle-icon { transform: rotate(-90deg); }
+        .panel-card.collapsed { padding-bottom: 8px; }
+        .panel-card.collapsed .card-body { display: none !important; }
         .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
         .tool-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border: none; background: var(--surface); color: var(--text2); font-family: inherit; font-size: 9px; font-weight: 500; border-radius: 8px; cursor: pointer; box-shadow: var(--neo-out-sm); transition: all .15s; }
         .tool-btn:hover { color: var(--text); box-shadow: var(--neo-out); }
@@ -2501,6 +2506,36 @@ function initUI() {
     pushHistory();
     updateHistBtns();
     render();
+    initCollapsibleCards();
+}
+
+function initCollapsibleCards() {
+    document.querySelectorAll('.panel-card').forEach(card => {
+        const title = card.querySelector('.panel-title');
+        if (!title) return;
+
+        let icon = title.querySelector('.card-toggle-icon');
+        if (!icon) {
+            icon = document.createElement('span');
+            icon.className = 'card-toggle-icon';
+            icon.innerHTML = '▼';
+            title.appendChild(icon);
+        }
+
+        let body = card.querySelector('.card-body');
+        if (!body) {
+            body = document.createElement('div');
+            body.className = 'card-body';
+            const children = Array.from(card.childNodes).filter(node => node !== title && node !== body);
+            children.forEach(child => body.appendChild(child));
+            card.appendChild(body);
+        }
+
+        title.onclick = (e) => {
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+            card.classList.toggle('collapsed');
+        };
+    });
 }
 
 // ======================== THREE.JS 3D ENGINE ========================
